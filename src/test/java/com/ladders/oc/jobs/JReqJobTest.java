@@ -16,7 +16,7 @@ public class JReqJobTest
   {}
 
   @Test
-  public void jobsAreDisplayedByName()
+  public void jobsAreDisplayedByTitle()
   {
     Job job = new JReqJob(new JobTitle("Programmer"));
     JobDisplayer jobDisplayer = new ConsoleJobDisplayer();

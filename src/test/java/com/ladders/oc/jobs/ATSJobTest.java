@@ -16,7 +16,7 @@ public class ATSJobTest
   {}
 
   @Test
-  public void jobsAreDisplayedByName()
+  public void jobsAreDisplayedByTitle()
   {
     Job job = new ATSJob(new JobTitle("Developer"));
     JobDisplayer jobDisplayer = new ConsoleJobDisplayer();
