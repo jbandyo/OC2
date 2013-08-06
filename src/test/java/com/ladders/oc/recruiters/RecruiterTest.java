@@ -5,7 +5,10 @@ import static org.junit.Assert.*;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import com.ladders.oc.jobs.ATSJob;
+import com.ladders.oc.jobs.JReqJob;
 import com.ladders.oc.jobs.Job;
+import com.ladders.oc.jobs.JobTitle;
 
 public class RecruiterTest
 {
@@ -15,10 +18,18 @@ public class RecruiterTest
   {}
 
   @Test
-  public void recruiterCanPostJob()
+  public void recruiterCanPostATSJob()
   {
     Recruiter recruiter = new Recruiter();
-    Job job = new Job();
+    Job job = new ATSJob(new JobTitle("Developer"));
+    recruiter.postJob(job);
+  }
+
+  @Test
+  public void recruiterCanPostJReqJob()
+  {
+    Recruiter recruiter = new Recruiter();
+    Job job = new JReqJob(new JobTitle("Developer"));
     recruiter.postJob(job);
   }
 

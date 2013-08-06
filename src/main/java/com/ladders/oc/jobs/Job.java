@@ -1,6 +1,10 @@
 package com.ladders.oc.jobs;
 
-public class Job
+
+/**
+ * Abstract base class for all job types.
+ */
+public abstract class Job
 {
 
 }
