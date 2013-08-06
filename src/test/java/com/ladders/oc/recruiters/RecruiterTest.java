@@ -43,4 +43,5 @@ public class RecruiterTest
     RecruiterDisplayer recDisplayer = new ConsoleRecruiterDisplayer();
     recruiter.displayTo(recDisplayer);    
   }
+  
 }

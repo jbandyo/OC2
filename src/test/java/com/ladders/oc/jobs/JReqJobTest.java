@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.ladders.oc.displayers.ConsoleJobDisplayer;
 import com.ladders.oc.displayers.JobDisplayer;
 
-public class ATSJobTest
+public class JReqJobTest
 {
 
   @AfterClass
@@ -18,7 +18,7 @@ public class ATSJobTest
   @Test
   public void jobsAreDisplayedByName()
   {
-    Job job = new ATSJob(new JobTitle("Developer"));
+    Job job = new JReqJob(new JobTitle("Programmer"));
     JobDisplayer jobDisplayer = new ConsoleJobDisplayer();
     job.displayTo(jobDisplayer);    
   }
