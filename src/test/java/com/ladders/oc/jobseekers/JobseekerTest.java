@@ -85,7 +85,7 @@ public class JobseekerTest
     ApplicationProcessor appProcessor = new ApplicationProcessor();
     Jobseeker jobseeker = new Jobseeker();    
     Job job = new JReqJob(new JobTitle("Programmer"));
-    Resume resume = new Resume();
+    Resume resume = new Resume(jobseeker);
     boolean success = jobseeker.applyToJob(appProcessor, job, resume);
     assertTrue(success);
   }
@@ -97,6 +97,19 @@ public class JobseekerTest
     Jobseeker jobseeker = new Jobseeker();    
     Job job = new JReqJob(new JobTitle("Programmer"));
     boolean success = jobseeker.applyToJob(appProcessor, job, null);
+    assertFalse(success);
+  }
+
+  @Test
+  public void jobSeekersCannotApplyToJobsWithOthersResume()
+  {
+    ApplicationProcessor appProcessor = new ApplicationProcessor();
+    Jobseeker tom = new Jobseeker();    
+    Resume tomsResume = new Resume(tom);
+    Jobseeker dick = new Jobseeker();    
+    Resume dicksResume = new Resume(dick);
+    Job job = new JReqJob(new JobTitle("Programmer"));
+    boolean success = tom.applyToJob(appProcessor, job, dicksResume);
     assertFalse(success);
   }
   

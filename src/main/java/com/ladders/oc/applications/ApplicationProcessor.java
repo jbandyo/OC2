@@ -15,6 +15,8 @@ public class ApplicationProcessor
     {
       if (resume == null)
         return false;
+      if (!resume.ownedBy(jobseeker))
+        return false;
     }
     return true;
   }
