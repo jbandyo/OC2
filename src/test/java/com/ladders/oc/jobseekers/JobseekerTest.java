@@ -112,5 +112,20 @@ public class JobseekerTest
     boolean success = tom.applyToJob(appProcessor, job, dicksResume);
     assertFalse(success);
   }
+
+  @Test
+  public void jobSeekersCanApplyToDifferentJobsWithDifferentResume()
+  {
+    ApplicationProcessor appProcessor = new ApplicationProcessor();
+    Jobseeker jobseeker = new Jobseeker();   
+    Resume architectResume = new Resume(jobseeker);
+    Resume developerResume = new Resume(jobseeker);
+    Job architectJob = new JReqJob(new JobTitle("Architect"));
+    Job developerJob = new JReqJob(new JobTitle("Developer"));
+    boolean success = jobseeker.applyToJob(appProcessor, architectJob, architectResume);
+    assertTrue(success);
+    success = jobseeker.applyToJob(appProcessor, developerJob, developerResume);
+    assertTrue(success);
+  }
   
 }
