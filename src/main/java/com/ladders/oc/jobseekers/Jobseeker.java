@@ -17,4 +17,10 @@ public class Jobseeker
     return jobs;
   }
 
+  public void applyToJob(Job job1)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
 }
