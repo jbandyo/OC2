@@ -22,4 +22,6 @@ public abstract class Job implements DisplayableJob
    displayer.displayJob(title);
  }
 
+  public abstract boolean RequiresResume();
+
 }

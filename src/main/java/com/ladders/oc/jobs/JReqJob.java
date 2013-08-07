@@ -8,4 +8,10 @@ public class JReqJob extends Job
     super(jobTitle);
   }
 
+  @Override
+  public boolean RequiresResume()
+  {
+    return true;
+  }
+
 }

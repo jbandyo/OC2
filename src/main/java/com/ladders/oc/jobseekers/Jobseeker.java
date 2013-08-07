@@ -1,7 +1,9 @@
 package com.ladders.oc.jobseekers;
 
+import com.ladders.oc.applications.ApplicationProcessor;
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobs.Jobs;
+import com.ladders.oc.resumes.Resume;
 
 public class Jobseeker
 {
@@ -17,10 +19,9 @@ public class Jobseeker
     return jobs;
   }
 
-  public void applyToJob(Job job1)
+  public boolean applyToJob(ApplicationProcessor appProcessor, Job job, Resume resume)
   {
-    // TODO Auto-generated method stub
-    
+    return appProcessor.apply(this, job, resume);
   }
 
 }

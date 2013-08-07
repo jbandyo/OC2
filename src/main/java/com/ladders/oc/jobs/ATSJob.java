@@ -8,4 +8,10 @@ public class ATSJob extends Job
     super(jobTitle);
   }
 
+  @Override
+  public boolean RequiresResume()
+  {
+    return false;
+  }
+
 }

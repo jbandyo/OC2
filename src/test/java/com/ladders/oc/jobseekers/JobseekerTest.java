@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import com.ladders.oc.applications.ApplicationProcessor;
 import com.ladders.oc.displayers.ConsoleJobsDisplayer;
 import com.ladders.oc.displayers.JobsDisplayer;
 import com.ladders.oc.jobs.ATSJob;
@@ -12,6 +13,7 @@ import com.ladders.oc.jobs.JReqJob;
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobs.JobTitle;
 import com.ladders.oc.jobs.Jobs;
+import com.ladders.oc.resumes.Resume;
 
 public class JobseekerTest
 {
@@ -68,11 +70,34 @@ public class JobseekerTest
   }
 
   @Test
-  public void jobSeekersCanApplyToATSJobs()
+  public void jobSeekersCanApplyToATSJobsWithoutResume()
   {
+    ApplicationProcessor appProcessor = new ApplicationProcessor();
     Jobseeker jobseeker = new Jobseeker();    
-    Job job1 = new ATSJob(new JobTitle("Developer"));
-    jobseeker.applyToJob(job1);
+    Job job = new ATSJob(new JobTitle("Developer"));
+    boolean success = jobseeker.applyToJob(appProcessor, job, null);
+    assertTrue(success);
+  }
+
+  @Test
+  public void jobSeekersCanApplyToJReqJobsWithResume()
+  {
+    ApplicationProcessor appProcessor = new ApplicationProcessor();
+    Jobseeker jobseeker = new Jobseeker();    
+    Job job = new JReqJob(new JobTitle("Programmer"));
+    Resume resume = new Resume();
+    boolean success = jobseeker.applyToJob(appProcessor, job, resume);
+    assertTrue(success);
+  }
+
+  @Test
+  public void jobSeekersCannotApplyToJReqJobsWithoutResume()
+  {
+    ApplicationProcessor appProcessor = new ApplicationProcessor();
+    Jobseeker jobseeker = new Jobseeker();    
+    Job job = new JReqJob(new JobTitle("Programmer"));
+    boolean success = jobseeker.applyToJob(appProcessor, job, null);
+    assertFalse(success);
   }
   
 }
