@@ -9,6 +9,7 @@ import com.ladders.oc.jobs.ATSJob;
 import com.ladders.oc.jobs.JReqJob;
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobs.JobTitle;
+import com.ladders.oc.jobs.Jobs;
 
 public class JobseekerTest
 {
@@ -33,4 +34,19 @@ public class JobseekerTest
     jobseeker.saveJob(job1);
   }
 
+  @Test
+  public void jobseekerCanListSavedJobs()
+  {
+    Jobseeker jobseeker = new Jobseeker();    
+    Job job1 = new ATSJob(new JobTitle("Developer"));
+    jobseeker.saveJob(job1);
+    Job job2 = new ATSJob(new JobTitle("Architect"));
+    jobseeker.saveJob(job2);
+    Job job3 = new JReqJob(new JobTitle("Programmer"));
+    jobseeker.saveJob(job3);
+    Jobs jobs = jobseeker.getSavedJobs();
+    assertTrue(jobs.contains(job1));
+    assertTrue(jobs.contains(job2));
+    assertTrue(jobs.contains(job3));
+  }
 }

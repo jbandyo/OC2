@@ -1,14 +1,20 @@
 package com.ladders.oc.jobseekers;
 
 import com.ladders.oc.jobs.Job;
+import com.ladders.oc.jobs.Jobs;
 
 public class Jobseeker
 {
+  private final Jobs jobs = new Jobs();
 
-  public void saveJob(Job job1)
+  public void saveJob(Job job)
   {
-    // TODO Auto-generated method stub
-    
+    jobs.add(job);
+  }
+
+  public Jobs getSavedJobs()
+  {
+    return jobs;
   }
 
 }
