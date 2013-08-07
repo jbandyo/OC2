@@ -5,11 +5,13 @@ import com.ladders.oc.displayables.DisplayableName;
 import com.ladders.oc.displayables.DisplayableRecruiter;
 import com.ladders.oc.displayers.RecruiterDisplayer;
 import com.ladders.oc.jobs.Job;
+import com.ladders.oc.jobs.Jobs;
 
 public class Recruiter implements DisplayableRecruiter
 {
 
   private final Name name;
+  private final Jobs jobs = new Jobs();
 
   public Recruiter(Name name)
   {
@@ -18,8 +20,12 @@ public class Recruiter implements DisplayableRecruiter
 
   public void postJob(Job job)
   {
-    // TODO Auto-generated method stub
-    
+    jobs.add(job);
+  }
+
+  public Jobs listPostedJobs()
+  {
+    return jobs;
   }
 
   @Override
