@@ -127,5 +127,48 @@ public class JobseekerTest
     success = jobseeker.applyToJob(appProcessor, developerJob, developerResume);
     assertTrue(success);
   }
-  
+
+  @Test
+  public void jobSeekersCanListJobsToWhichTheyApplied()
+  {
+    ApplicationProcessor appProcessor = new ApplicationProcessor();
+    Jobseeker jobseeker = new Jobseeker();   
+    Resume architectResume = new Resume(jobseeker);
+    Resume developerResume = new Resume(jobseeker);
+    Job architectJob = new JReqJob(new JobTitle("Architect"));
+    Job developerJob = new JReqJob(new JobTitle("Developer"));
+    Job programmerJob = new ATSJob(new JobTitle("Programmer"));
+    boolean success = jobseeker.applyToJob(appProcessor, architectJob, architectResume);
+    assertTrue(success);
+    success = jobseeker.applyToJob(appProcessor, developerJob, developerResume);
+    assertTrue(success);
+    success = jobseeker.applyToJob(appProcessor, programmerJob, null);
+    assertTrue(success);
+    Jobs jobs = jobseeker.getAppliedToJobs();
+    assertTrue(jobs.contains(architectJob));
+    assertTrue(jobs.contains(developerJob));
+    assertTrue(jobs.contains(programmerJob));
+  }
+
+  @Test
+  public void jobSeekersCanDisplayJobsToWhichTheyApplied()
+  {
+    ApplicationProcessor appProcessor = new ApplicationProcessor();
+    Jobseeker jobseeker = new Jobseeker();   
+    Resume architectResume = new Resume(jobseeker);
+    Resume developerResume = new Resume(jobseeker);
+    Job architectJob = new JReqJob(new JobTitle("Architect"));
+    Job developerJob = new JReqJob(new JobTitle("Developer"));
+    Job programmerJob = new ATSJob(new JobTitle("Programmer"));
+    boolean success = jobseeker.applyToJob(appProcessor, architectJob, architectResume);
+    assertTrue(success);
+    success = jobseeker.applyToJob(appProcessor, developerJob, developerResume);
+    assertTrue(success);
+    success = jobseeker.applyToJob(appProcessor, programmerJob, null);
+    assertTrue(success);
+    Jobs jobs = jobseeker.getAppliedToJobs();
+    JobsDisplayer jobsDisplayer = new ConsoleJobsDisplayer();
+    jobs.displayTo(jobsDisplayer);
+  }
+
 }
