@@ -6,7 +6,9 @@ import org.junit.AfterClass;
 import org.junit.Test;
 
 import com.ladders.oc.Name;
+import com.ladders.oc.displayers.ConsoleJobsDisplayer;
 import com.ladders.oc.displayers.ConsoleRecruiterDisplayer;
+import com.ladders.oc.displayers.JobsDisplayer;
 import com.ladders.oc.displayers.RecruiterDisplayer;
 import com.ladders.oc.jobs.ATSJob;
 import com.ladders.oc.jobs.JReqJob;
@@ -46,10 +48,9 @@ public class RecruiterTest
   }
 
   @Test
-  public void recruitersCanSeeJobsTheyPosted()
+  public void recruitersCanListJobsTheyPosted()
   {
-    Recruiter recruiter = new Recruiter(new Name("George"));
-    
+    Recruiter recruiter = new Recruiter(new Name("George"));    
     Job job1 = new ATSJob(new JobTitle("Developer"));
     recruiter.postJob(job1);
     Job job2 = new ATSJob(new JobTitle("Architect"));
@@ -61,5 +62,19 @@ public class RecruiterTest
     assertTrue(jobs.contains(job2));
     assertTrue(jobs.contains(job3));
   }
-  
+
+  @Test
+  public void recruitersCanDisplayJobsTheyPosted()
+  {
+    Recruiter recruiter = new Recruiter(new Name("George"));    
+    Job job1 = new ATSJob(new JobTitle("Developer"));
+    recruiter.postJob(job1);
+    Job job2 = new ATSJob(new JobTitle("Architect"));
+    recruiter.postJob(job2);
+    Job job3 = new JReqJob(new JobTitle("Programmer"));
+    recruiter.postJob(job3);
+    Jobs jobs = recruiter.listPostedJobs();
+    JobsDisplayer jobsDisplayer = new ConsoleJobsDisplayer();
+    jobs.displayTo(jobsDisplayer);
+  }
 }

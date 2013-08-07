@@ -1,7 +1,6 @@
 package com.ladders.oc.recruiters;
 
 import com.ladders.oc.Name;
-import com.ladders.oc.displayables.DisplayableName;
 import com.ladders.oc.displayables.DisplayableRecruiter;
 import com.ladders.oc.displayers.RecruiterDisplayer;
 import com.ladders.oc.jobs.Job;
@@ -31,7 +30,7 @@ public class Recruiter implements DisplayableRecruiter
   @Override
   public void displayTo(RecruiterDisplayer displayer)
   {
-    displayer.displayRecruiter((DisplayableName)name);
+    displayer.displayRecruiter(name);
     
   }
 
