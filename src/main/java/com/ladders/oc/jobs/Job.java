@@ -15,13 +15,13 @@ public abstract class Job implements DisplayableJob
   {
     this.title = title;
   }
-  
+
+  public abstract boolean RequiresResume();
+
   @Override
   public void displayTo(JobDisplayer displayer)
  {
    displayer.displayJob(title);
  }
-
-  public abstract boolean RequiresResume();
 
 }
