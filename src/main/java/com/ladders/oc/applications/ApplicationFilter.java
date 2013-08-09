@@ -4,37 +4,41 @@ import java.util.Date;
 
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobseekers.Jobseeker;
+import com.theladders.confident.Maybe;
 
 class ApplicationFilter
 {
-  private Job job = null;
-  private Jobseeker jobseeker = null;
-  private Date date = null;
+  private Maybe<Job> job = Maybe.nothing();
+  private Maybe<Jobseeker> jobseeker = Maybe.nothing();
+  private Maybe<Date> date = Maybe.nothing();
   
-  public void setJobFilter(Job job)
+  public ApplicationFilter byJob(Job job)
   {
-    this.job = job;    
+    this.job = Maybe.just(job);
+    return this;
   }
 
-  public void setJobseekerFilter(Jobseeker jobseeker)
+  public ApplicationFilter byJobseeke(Jobseeker jobseeker)
   {
-    this.jobseeker = jobseeker;
+    this.jobseeker = Maybe.just(jobseeker);
+    return this;
   }
 
-  public void setDate(Date date)
+  public ApplicationFilter byDate(Date date)
   {
-    this.date = date;    
+    this.date = Maybe.just(date);
+    return this;
   }
 
-  public boolean pass(Application app)
+  public boolean pass(Application application)
   {
-    if ((job != null) && (!app.containsJob(job)))
+    if ((job.isSomething()) && (!application.containsJob(job.get())))
       return false;
     
-    if ((jobseeker != null) && (!app.containsJobseeker(jobseeker)))
+    if ((jobseeker.isSomething()) && (!application.containsJobseeker(jobseeker.get())))
       return false;
       
-    if ((date != null) && (!app.containsDate(date)))
+    if ((date.isSomething()) && (!application.containsDate(date.get())))
       return false;
     
     return true;

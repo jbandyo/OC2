@@ -21,6 +21,8 @@ import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobs.JobTitle;
 import com.ladders.oc.jobs.Jobs;
 import com.ladders.oc.jobseekers.Jobseeker;
+import com.ladders.oc.resumes.Resume;
+import com.theladders.confident.Maybe;
 
 public class RecruiterTest
 {
@@ -94,14 +96,15 @@ public class RecruiterTest
     recruiter.postJob(jobArchitect);
     
     setupApplicationRepository();
+    Maybe<Resume> noResume = Maybe.nothing();
     boolean applyStatus;
-    applyStatus = jobseekerTom.applyToJob(appProcessor, jobDeveloper, null);
+    applyStatus = jobseekerTom.applyToJob(appProcessor, jobDeveloper, noResume);
     assertTrue(applyStatus);
-    applyStatus = jobseekerTom.applyToJob(appProcessor, jobArchitect, null);
+    applyStatus = jobseekerTom.applyToJob(appProcessor, jobArchitect, noResume);
     assertTrue(applyStatus);
-    applyStatus = jobseekerDick.applyToJob(appProcessor, jobArchitect, null);
+    applyStatus = jobseekerDick.applyToJob(appProcessor, jobArchitect, noResume);
     assertTrue(applyStatus);
-    applyStatus = jobseekerHarry.applyToJob(appProcessor, jobDeveloper, null);
+    applyStatus = jobseekerHarry.applyToJob(appProcessor, jobDeveloper, noResume);
     assertTrue(applyStatus);
 
     Applications devApplications = recruiter.listApplicationsByJob(appRepo, jobDeveloper);

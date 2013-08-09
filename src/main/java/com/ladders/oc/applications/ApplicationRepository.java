@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.ladders.oc.jobs.Job;
+import com.theladders.confident.Maybe;
 
 public class ApplicationRepository
 {
@@ -19,7 +20,7 @@ public class ApplicationRepository
   public Applications getApplicationsByJob(Job job)
   {
     ApplicationFilter filter = new ApplicationFilter();
-    filter.setJobFilter(job);
+    filter = filter.byJob(job);
     return getApplications(filter);
   }
   
