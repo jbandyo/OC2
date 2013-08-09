@@ -11,7 +11,6 @@ public class ConsoleApplicationsJobseekerDisplayer implements ApplicationsDispla
   public void displayApplications(Set<DisplayableApplication> appSet)
   {
     ApplicationDisplayer displayer = new ConsoleApplicationJobseekerDisplayer();
-    System.out.println("Applications--");
     for (DisplayableApplication app : appSet)
     {
       System.out.print("- ");

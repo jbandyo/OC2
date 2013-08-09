@@ -7,6 +7,7 @@ import com.ladders.oc.displayers.JobseekerDisplayer;
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobs.Jobs;
 import com.ladders.oc.resumes.Resume;
+import com.theladders.confident.Maybe;
 
 public class Jobseeker implements DisplayableJobseeker
 {
@@ -30,7 +31,7 @@ public class Jobseeker implements DisplayableJobseeker
     return savedJobs;
   }
 
-  public boolean applyToJob(ApplicationProcessor appProcessor, Job job, Resume resume)
+  public boolean applyToJob(ApplicationProcessor appProcessor, Job job, Maybe<Resume> resume)
   {
     boolean applyStatus = appProcessor.apply(this, job, resume);
     if (applyStatus)

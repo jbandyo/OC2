@@ -3,6 +3,7 @@ package com.ladders.oc.applications;
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobseekers.Jobseeker;
 import com.ladders.oc.resumes.Resume;
+import com.theladders.confident.Maybe;
 
 public class ApplicationProcessor
 {
@@ -15,7 +16,7 @@ public class ApplicationProcessor
 
   public boolean apply(Jobseeker jobseeker,
                        Job job,
-                       Resume resume)
+                       Maybe<Resume> resume)
   {
     if (!isValidApplication(jobseeker, job, resume))
       return false;
@@ -28,15 +29,18 @@ public class ApplicationProcessor
   
   private boolean isValidApplication(Jobseeker jobseeker,
                                      Job job,
-                                     Resume resume)
+                                     Maybe<Resume> maybeResume)
   {
     if (job.RequiresResume())
     {
-      if (resume == null)
+      if (maybeResume.isNothing())
         return false;
+  
+      Resume resume = maybeResume.get();
       if (!resume.ownedBy(jobseeker))
-        return false;
+          return false;
     }
+
     return true;
   }
 

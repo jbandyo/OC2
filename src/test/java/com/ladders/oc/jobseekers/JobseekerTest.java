@@ -15,25 +15,20 @@ import com.ladders.oc.jobs.JReqJob;
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobs.JobTitle;
 import com.ladders.oc.jobs.Jobs;
+import com.ladders.oc.recruiters.Recruiter;
 import com.ladders.oc.resumes.Resume;
+import com.theladders.confident.Maybe;
 
 public class JobseekerTest
 {
   private ApplicationRepository appRepo;
   private ApplicationProcessor  appProcessor;
+  private Job programmerJob;
+  private Job developerJob;
+  private Job architectJob;
 
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception
-  {}
-
-  private void setupApplicationRepository()
-  {
-    appRepo = new ApplicationRepository();
-    appProcessor = new ApplicationProcessor(appRepo);
-  }
-  
   @Test
-  public void jobseekerCanSaveATSJob()
+  public void jobseekerCanSaveJob()
   {
     Job job1 = new ATSJob(new JobTitle("Developer"));    
     Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
@@ -41,39 +36,27 @@ public class JobseekerTest
   }
 
   @Test
-  public void jobseekerCanSaveJReqJob()
-  {
-    Job job1 = new JReqJob(new JobTitle("Programmer"));    
-    Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
-    jobseeker.saveJob(job1);
-  }
-
-  @Test
   public void jobseekerCanListSavedJobs()
   {
+    setupJobs();
     Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
-    Job job1 = new ATSJob(new JobTitle("Developer"));
-    jobseeker.saveJob(job1);
-    Job job2 = new ATSJob(new JobTitle("Architect"));
-    jobseeker.saveJob(job2);
-    Job job3 = new JReqJob(new JobTitle("Programmer"));
-    jobseeker.saveJob(job3);
+    jobseeker.saveJob(programmerJob);
+    jobseeker.saveJob(developerJob);
+    jobseeker.saveJob(architectJob);
     Jobs jobs = jobseeker.getSavedJobs();
-    assertTrue(jobs.contains(job1));
-    assertTrue(jobs.contains(job2));
-    assertTrue(jobs.contains(job3));
+    assertTrue(jobs.contains(programmerJob));
+    assertTrue(jobs.contains(developerJob));
+    assertTrue(jobs.contains(architectJob));
   }
   
   @Test
   public void jobSeekersCanDisplayJobsTheySaved()
   {
+    setupJobs();
     Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
-    Job job1 = new ATSJob(new JobTitle("Developer"));
-    jobseeker.saveJob(job1);
-    Job job2 = new ATSJob(new JobTitle("Architect"));
-    jobseeker.saveJob(job2);
-    Job job3 = new JReqJob(new JobTitle("Programmer"));
-    jobseeker.saveJob(job3);
+    jobseeker.saveJob(programmerJob);
+    jobseeker.saveJob(developerJob);
+    jobseeker.saveJob(architectJob);
     Jobs jobs = jobseeker.getSavedJobs();
     JobsDisplayer jobsDisplayer = new ConsoleJobsDisplayer();
     jobs.displayTo(jobsDisplayer);
@@ -83,9 +66,10 @@ public class JobseekerTest
   public void jobSeekersCanApplyToATSJobsWithoutResume()
   {
     setupApplicationRepository();
-    Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
-    Job job = new ATSJob(new JobTitle("Developer"));
-    boolean applyStatus = jobseeker.applyToJob(appProcessor, job, null);
+    Jobseeker jobseekerTom = new Jobseeker(new Name("Tom"));    
+    Job developerJob = new ATSJob(new JobTitle("Developer"));
+    Maybe<Resume> noResume = Maybe.nothing();
+    boolean applyStatus = jobseekerTom.applyToJob(appProcessor, developerJob, noResume);
     assertTrue(applyStatus);
   }
 
@@ -93,10 +77,10 @@ public class JobseekerTest
   public void jobSeekersCanApplyToJReqJobsWithResume()
   {
     setupApplicationRepository();
-    Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
-    Job job = new JReqJob(new JobTitle("Programmer"));
-    Resume resume = new Resume(jobseeker);
-    boolean applyStatus = jobseeker.applyToJob(appProcessor, job, resume);
+    Jobseeker jobseekerTom = new Jobseeker(new Name("Tom"));    
+    Job programmerJob = new JReqJob(new JobTitle("Programmer"));
+    Maybe<Resume> tomsResume = Maybe.just(new Resume(jobseekerTom));
+    boolean applyStatus = jobseekerTom.applyToJob(appProcessor, programmerJob, tomsResume);
     assertTrue(applyStatus);
   }
 
@@ -104,9 +88,10 @@ public class JobseekerTest
   public void jobSeekersCannotApplyToJReqJobsWithoutResume()
   {
     setupApplicationRepository();
-    Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
-    Job job = new JReqJob(new JobTitle("Programmer"));
-    boolean applyStatus = jobseeker.applyToJob(appProcessor, job, null);
+    Jobseeker jobseekerTom = new Jobseeker(new Name("Tom"));    
+    Job programmerJob = new JReqJob(new JobTitle("Programmer"));
+    Maybe<Resume> noResume = Maybe.nothing();
+    boolean applyStatus = jobseekerTom.applyToJob(appProcessor, programmerJob, noResume);
     assertFalse(applyStatus);
   }
 
@@ -114,26 +99,25 @@ public class JobseekerTest
   public void jobSeekersCannotApplyToJobsWithOthersResume()
   {
     setupApplicationRepository();
-    Jobseeker tom = new Jobseeker(new Name("Tom"));    
-    Jobseeker dick = new Jobseeker(new Name("Dick"));    
-    Resume dicksResume = new Resume(dick);
-    Job job = new JReqJob(new JobTitle("Programmer"));
-    boolean applyStatus = tom.applyToJob(appProcessor, job, dicksResume);
+    Jobseeker jobseekerTom = new Jobseeker(new Name("Tom"));    
+    Jobseeker jobseekerDick = new Jobseeker(new Name("Dick"));    
+    Maybe<Resume> dicksResume = Maybe.just(new Resume(jobseekerDick));
+    Job programmerJob = new JReqJob(new JobTitle("Programmer"));
+    boolean applyStatus = jobseekerTom.applyToJob(appProcessor, programmerJob, dicksResume);
     assertFalse(applyStatus);
   }
 
   @Test
   public void jobSeekersCanApplyToDifferentJobsWithDifferentResume()
   {
+    setupJobs();
     setupApplicationRepository();
-    Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
-    Resume architectResume = new Resume(jobseeker);
-    Resume developerResume = new Resume(jobseeker);
-    Job architectJob = new JReqJob(new JobTitle("Architect"));
-    Job developerJob = new JReqJob(new JobTitle("Developer"));
-    boolean applyStatus = jobseeker.applyToJob(appProcessor, architectJob, architectResume);
+    Jobseeker jobseekerTom = new Jobseeker(new Name("Tom"));    
+    Maybe<Resume> architectResume = Maybe.just(new Resume(jobseekerTom));
+    Maybe<Resume> developerResume = Maybe.just(new Resume(jobseekerTom));
+    boolean applyStatus = jobseekerTom.applyToJob(appProcessor, architectJob, architectResume);
     assertTrue(applyStatus);
-    applyStatus = jobseeker.applyToJob(appProcessor, developerJob, developerResume);
+    applyStatus = jobseekerTom.applyToJob(appProcessor, developerJob, developerResume);
     assertTrue(applyStatus);
   }
 
@@ -141,19 +125,18 @@ public class JobseekerTest
   public void jobSeekersCanListJobsToWhichTheyApplied()
   {
     setupApplicationRepository();
-    Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
-    Resume architectResume = new Resume(jobseeker);
-    Resume developerResume = new Resume(jobseeker);
-    Job architectJob = new JReqJob(new JobTitle("Architect"));
-    Job developerJob = new JReqJob(new JobTitle("Developer"));
-    Job programmerJob = new ATSJob(new JobTitle("Programmer"));
-    boolean applyStatus = jobseeker.applyToJob(appProcessor, architectJob, architectResume);
+    setupJobs();
+    Jobseeker jobseekerTom = new Jobseeker(new Name("Tom"));    
+    Maybe<Resume> noResume = Maybe.nothing();
+    Maybe<Resume> architectResume = Maybe.just(new Resume(jobseekerTom));
+    Maybe<Resume> developerResume = Maybe.just(new Resume(jobseekerTom));
+    boolean applyStatus = jobseekerTom.applyToJob(appProcessor, architectJob, architectResume);
     assertTrue(applyStatus);
-    applyStatus = jobseeker.applyToJob(appProcessor, developerJob, developerResume);
+    applyStatus = jobseekerTom.applyToJob(appProcessor, developerJob, developerResume);
     assertTrue(applyStatus);
-    applyStatus = jobseeker.applyToJob(appProcessor, programmerJob, null);
+    applyStatus = jobseekerTom.applyToJob(appProcessor, programmerJob, noResume);
     assertTrue(applyStatus);
-    Jobs jobs = jobseeker.getAppliedToJobs();
+    Jobs jobs = jobseekerTom.getAppliedToJobs();
     assertTrue(jobs.contains(architectJob));
     assertTrue(jobs.contains(developerJob));
     assertTrue(jobs.contains(programmerJob));
@@ -163,21 +146,33 @@ public class JobseekerTest
   public void jobSeekersCanDisplayJobsToWhichTheyApplied()
   {
     setupApplicationRepository();
-    Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
-    Resume architectResume = new Resume(jobseeker);
-    Resume developerResume = new Resume(jobseeker);
-    Job architectJob = new JReqJob(new JobTitle("Architect"));
-    Job developerJob = new JReqJob(new JobTitle("Developer"));
-    Job programmerJob = new ATSJob(new JobTitle("Programmer"));
-    boolean applyStatus = jobseeker.applyToJob(appProcessor, architectJob, architectResume);
+    setupJobs();
+    Jobseeker jobseekerTom = new Jobseeker(new Name("Tom"));    
+    Maybe<Resume> noResume = Maybe.nothing();
+    Maybe<Resume> architectResume = Maybe.just(new Resume(jobseekerTom));
+    Maybe<Resume> developerResume = Maybe.just(new Resume(jobseekerTom));
+    boolean applyStatus = jobseekerTom.applyToJob(appProcessor, architectJob, architectResume);
     assertTrue(applyStatus);
-    applyStatus = jobseeker.applyToJob(appProcessor, developerJob, developerResume);
+    applyStatus = jobseekerTom.applyToJob(appProcessor, developerJob, developerResume);
     assertTrue(applyStatus);
-    applyStatus = jobseeker.applyToJob(appProcessor, programmerJob, null);
+    applyStatus = jobseekerTom.applyToJob(appProcessor, programmerJob, noResume);
     assertTrue(applyStatus);
-    Jobs jobs = jobseeker.getAppliedToJobs();
+    Jobs jobs = jobseekerTom.getAppliedToJobs();
     JobsDisplayer jobsDisplayer = new ConsoleJobsDisplayer();
     jobs.displayTo(jobsDisplayer);
+  }
+
+  private void setupApplicationRepository()
+  {
+    appRepo = new ApplicationRepository();
+    appProcessor = new ApplicationProcessor(appRepo);
+  }
+  
+  private void setupJobs()
+  {
+    developerJob = new JReqJob(new JobTitle("Developer"));
+    architectJob = new JReqJob(new JobTitle("Architect"));
+    programmerJob = new ATSJob(new JobTitle("Programmer"));
   }
 
 }
