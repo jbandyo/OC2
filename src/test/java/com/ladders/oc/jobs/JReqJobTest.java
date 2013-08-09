@@ -18,9 +18,11 @@ public class JReqJobTest
   @Test
   public void jobsAreDisplayedByTitle()
   {
-    Job job = new JReqJob(new JobTitle("Programmer"));
+    Job job = JReqJob.titled("Programmer");
     JobDisplayer jobDisplayer = new ConsoleJobDisplayer();
+    System.out.println("Display Job:");
     job.displayTo(jobDisplayer);    
+    System.out.println();
   }
 
 }

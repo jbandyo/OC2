@@ -18,9 +18,9 @@ public class ApplicationTest
   @Test
   public void checkingForJobWorks()
   {
-    Job job1 = new ATSJob(new JobTitle("Developer"));    
-    Job job2 = new ATSJob(new JobTitle("Programmer"));    
-    Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
+    Job job1 = ATSJob.titled("Developer");    
+    Job job2 = ATSJob.titled("Programmer");    
+    Jobseeker jobseeker = Jobseeker.named("Tom");    
     Application app = new Application(job1, jobseeker);
     assertFalse(app.containsJob(job2));
     assertTrue(app.containsJob(job1));
@@ -29,9 +29,9 @@ public class ApplicationTest
   @Test
   public void checkingForJobseekerWorks()
   {
-    Job job = new ATSJob(new JobTitle("Developer"));    
-    Jobseeker jobseekerTom = new Jobseeker(new Name("Tom"));    
-    Jobseeker jobseekerDick = new Jobseeker(new Name("Dick"));    
+    Job job = ATSJob.titled("Developer");    
+    Jobseeker jobseekerTom = Jobseeker.named("Tom");    
+    Jobseeker jobseekerDick = Jobseeker.named("Dick");;    
     Application app = new Application(job, jobseekerDick);
     assertFalse(app.containsJobseeker(jobseekerTom));
     assertTrue(app.containsJobseeker(jobseekerDick));
@@ -40,8 +40,8 @@ public class ApplicationTest
   @Test
   public void checkingForDateWorks()
   {
-    Job job = new ATSJob(new JobTitle("Developer"));    
-    Jobseeker jobseeker = new Jobseeker(new Name("Tom"));    
+    Job job = ATSJob.titled("Developer");    
+    Jobseeker jobseeker = Jobseeker.named("Tom");    
     Application app = new Application(job, jobseeker);
     Date now = new Date();
     boolean result = app.containsDate(now);

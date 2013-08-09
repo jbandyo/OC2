@@ -18,7 +18,7 @@ class ApplicationFilter
     return this;
   }
 
-  public ApplicationFilter byJobseeke(Jobseeker jobseeker)
+  public ApplicationFilter byJobseeker(Jobseeker jobseeker)
   {
     this.jobseeker = Maybe.just(jobseeker);
     return this;

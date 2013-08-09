@@ -18,9 +18,11 @@ public class ATSJobTest
   @Test
   public void jobsAreDisplayedByTitle()
   {
-    Job job = new ATSJob(new JobTitle("Developer"));
+    Job job = ATSJob.titled("Developer");
     JobDisplayer jobDisplayer = new ConsoleJobDisplayer();
-    job.displayTo(jobDisplayer);    
+    System.out.println("Display Job:");
+    job.displayTo(jobDisplayer);
+    System.out.println();
   }
 
 }

@@ -1,22 +1,24 @@
 package com.ladders.oc.jobseekers;
 
 import com.ladders.oc.Name;
-import com.ladders.oc.applications.ApplicationProcessor;
+import com.ladders.oc.applications.ApplicationQueryHelper;
 import com.ladders.oc.displayables.DisplayableJobseeker;
 import com.ladders.oc.displayers.JobseekerDisplayer;
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobs.Jobs;
-import com.ladders.oc.resumes.Resume;
-import com.theladders.confident.Maybe;
 
 public class Jobseeker implements DisplayableJobseeker
 {
 
   private final Name name;
   private final Jobs savedJobs = new Jobs();
-  private final Jobs appliedToJobs = new Jobs();
 
-  public Jobseeker(Name name)
+  public static Jobseeker named(String name)
+  {
+    return new Jobseeker(new Name(name));
+  }
+  
+  private Jobseeker (Name name)
   {
     this.name = name;
   }
@@ -31,6 +33,11 @@ public class Jobseeker implements DisplayableJobseeker
     return savedJobs;
   }
 
+  public ApplicationHelper applyFor(Job developerJob)
+  {
+    return new ApplicationHelper(this, developerJob);
+  }
+/*
   public boolean applyToJob(ApplicationProcessor appProcessor, Job job, Maybe<Resume> resume)
   {
     boolean applyStatus = appProcessor.apply(this, job, resume);
@@ -38,17 +45,16 @@ public class Jobseeker implements DisplayableJobseeker
       appliedToJobs.add(job);
     return applyStatus;
   }
-
-  public Jobs getAppliedToJobs()
+*/
+  public ApplicationQueryHelper getJobsAppliedTo()
   {
-    return appliedToJobs;
+    return new ApplicationQueryHelper(this);
   }
 
   @Override
   public void displayTo(JobseekerDisplayer jobseekerDisplayer)
   {
-    jobseekerDisplayer.displayJobseeker(name);
-    
+    jobseekerDisplayer.displayJobseeker(name);    
   }
 
 }

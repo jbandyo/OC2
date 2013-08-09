@@ -28,9 +28,9 @@ public class RecruiterTest
 {
   private ApplicationRepository appRepo;
   private ApplicationProcessor  appProcessor;
-  private Job jobProgrammer;
-  private Job jobDeveloper;
-  private Job jobArchitect;
+  private Job programmerJob;
+  private Job developerJob;
+  private Job architectJob;
   private Jobseeker jobseekerTom;    
   private Jobseeker jobseekerDick;    
   private Jobseeker jobseekerHarry;    
@@ -39,23 +39,23 @@ public class RecruiterTest
   @Test
   public void recruiterCanPostATSJob()
   {
-    Recruiter recruiter = new Recruiter(new Name("George"));
-    Job job = new ATSJob(new JobTitle("Developer"));
-    recruiter.postJob(jobDeveloper);
+    Recruiter recruiter = Recruiter.named("George");
+    Job developerJob = ATSJob.titled("Developer");
+    recruiter.post(developerJob);
   }
 
   @Test
   public void recruiterCanPostJReqJob()
   {
-    Recruiter recruiter = new Recruiter(new Name("George"));
-    Job job = new JReqJob(new JobTitle("Developer"));
-    recruiter.postJob(job);
+    Recruiter recruiter = Recruiter.named("George");
+    Job developerJob = JReqJob.titled("Developer");
+    recruiter.post(developerJob);
   }
 
   @Test
   public void recruitersAreDisplayedByName()
   {
-    Recruiter recruiter = new Recruiter(new Name("George"));
+    Recruiter recruiter = Recruiter.named("George");
     RecruiterDisplayer recDisplayer = new ConsoleRecruiterDisplayer();
     System.out.println("Display Recruiter");
     recruiter.displayTo(recDisplayer);    
@@ -66,24 +66,28 @@ public class RecruiterTest
   public void recruitersCanListJobsTheyPosted()
   {
     setupActors();
-    recruiter.postJob(jobDeveloper);
-    recruiter.postJob(jobArchitect);
-    Jobs jobs = recruiter.listPostedJobs();
-    assertTrue(jobs.contains(jobDeveloper));
-    assertTrue(jobs.contains(jobArchitect));
-    assertFalse(jobs.contains(jobProgrammer));
+    recruiter.post(developerJob);
+    recruiter.post(architectJob);
+    
+    Jobs jobs = recruiter.getPostedJobs();
+    
+    assertTrue(jobs.contains(developerJob));
+    assertTrue(jobs.contains(architectJob));
+    assertFalse(jobs.contains(programmerJob));
   }
 
   @Test
   public void recruitersCanDisplayJobsTheyPosted()
   {
     setupActors();
-    recruiter.postJob(jobDeveloper);
-    recruiter.postJob(jobArchitect);
-    recruiter.postJob(jobProgrammer);
-    Jobs jobs = recruiter.listPostedJobs();
+    recruiter.post(developerJob);
+    recruiter.post(architectJob);
+    recruiter.post(programmerJob);
+ 
+    Jobs jobs = recruiter.getPostedJobs();
+    
     JobsDisplayer jobsDisplayer = new ConsoleJobsDisplayer();
-    System.out.println("Posted JObs");
+    System.out.println("Posted Jobs");
     jobs.displayTo(jobsDisplayer);
     System.out.println();
   }
@@ -92,34 +96,34 @@ public class RecruiterTest
   public void recruitersCanSeeJobseekersByJob()
   {
     setupActors();
-    recruiter.postJob(jobDeveloper);
-    recruiter.postJob(jobArchitect);
+    recruiter.post(developerJob);
+    recruiter.post(architectJob);
     
     setupApplicationRepository();
-    Maybe<Resume> noResume = Maybe.nothing();
     boolean applyStatus;
-    applyStatus = jobseekerTom.applyToJob(appProcessor, jobDeveloper, noResume);
+
+    applyStatus = jobseekerTom.applyFor(developerJob).to(appProcessor);
     assertTrue(applyStatus);
-    applyStatus = jobseekerTom.applyToJob(appProcessor, jobArchitect, noResume);
+    applyStatus = jobseekerTom.applyFor(architectJob).to(appProcessor);
     assertTrue(applyStatus);
-    applyStatus = jobseekerDick.applyToJob(appProcessor, jobArchitect, noResume);
+    applyStatus = jobseekerDick.applyFor(architectJob).to(appProcessor);
     assertTrue(applyStatus);
-    applyStatus = jobseekerHarry.applyToJob(appProcessor, jobDeveloper, noResume);
+    applyStatus = jobseekerHarry.applyFor(developerJob).to(appProcessor);
     assertTrue(applyStatus);
 
-    Applications devApplications = recruiter.listApplicationsByJob(appRepo, jobDeveloper);
-    assertNotNull(devApplications);
+    Applications developerApps = recruiter.getApplicationsBy(developerJob).from(appRepo);
+    assertNotNull(developerApps);
 
     ApplicationsDisplayer appsDisplayer = new ConsoleApplicationsJobseekerDisplayer();
     System.out.println("Jobseekers for Developer job");
-    devApplications.displayTo(appsDisplayer);
+    developerApps.displayTo(appsDisplayer);
 
-    Applications archApplications = recruiter.listApplicationsByJob(appRepo, jobArchitect);
+    Applications archApplications = recruiter.getApplicationsBy(architectJob).from(appRepo);
     assertNotNull(archApplications);
 
     System.out.println("Jobseekers for Architect job");
     archApplications.displayTo(appsDisplayer);
-}
+  }
 
   private void setupApplicationRepository()
   {
@@ -129,13 +133,13 @@ public class RecruiterTest
   
   private void setupActors()
   {
-    jobDeveloper = new ATSJob(new JobTitle("Developer"));
-    jobArchitect = new ATSJob(new JobTitle("Architect"));
-    jobProgrammer = new JReqJob(new JobTitle("Programmer"));
-    jobseekerTom = new Jobseeker(new Name("Tom"));    
-    jobseekerDick = new Jobseeker(new Name("Dick"));    
-    jobseekerHarry = new Jobseeker(new Name("Harry"));    
-    recruiter = new Recruiter(new Name("George"));
+    developerJob  = ATSJob.titled("Developer");
+    architectJob  = ATSJob.titled("Architect");
+    programmerJob = JReqJob.titled("Programmer");
+    jobseekerTom   = Jobseeker.named("Tom");   
+    jobseekerDick  = Jobseeker.named("Dick");    
+    jobseekerHarry = Jobseeker.named("Harry");    
+    recruiter      = Recruiter.named("George");
   }
 
 }

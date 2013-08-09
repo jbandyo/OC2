@@ -5,8 +5,13 @@ import com.ladders.oc.jobseekers.Jobseeker;
 public class Resume
 {
   Jobseeker jobseeker;
+  
+  public static Resume createdBy(Jobseeker jobseeker)
+  {
+    return new Resume(jobseeker);
+  }
 
-  public Resume(Jobseeker jobseeker)
+  private Resume(Jobseeker jobseeker)
   {
     this.jobseeker = jobseeker;
   }

@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.ladders.oc.jobs.Job;
-import com.theladders.confident.Maybe;
+import com.ladders.oc.jobseekers.Jobseeker;
 
 public class ApplicationRepository
 {
@@ -24,7 +24,7 @@ public class ApplicationRepository
     return getApplications(filter);
   }
   
-  private Applications getApplications(ApplicationFilter filter)
+  Applications getApplications(ApplicationFilter filter)
   {
     Applications apps = new Applications();
     synchronized (appSet)
