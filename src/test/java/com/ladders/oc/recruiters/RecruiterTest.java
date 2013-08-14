@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import org.mockito.*;
@@ -37,6 +38,18 @@ public class RecruiterTest
   private Jobseeker jobseekerDick;    
   private Jobseeker jobseekerHarry;    
   private Recruiter recruiter;
+  
+  @Test
+  public void thereCanBeMoreThanOneJobseekersWithSameName()
+  {
+    Recruiter recruiter1 = Recruiter.named("George");
+    Recruiter recruiter2 = Recruiter.named("George");
+    Recruiter recruiter3 = Recruiter.named("George");
+    
+    Assert.assertNotEquals(recruiter1, recruiter2);
+    Assert.assertNotEquals(recruiter1, recruiter3);
+    Assert.assertNotEquals(recruiter2, recruiter3);
+  }
 
   @Test
   public void recruiterCanPostATSJob()

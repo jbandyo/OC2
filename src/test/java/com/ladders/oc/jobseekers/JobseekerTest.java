@@ -2,6 +2,7 @@ package com.ladders.oc.jobseekers;
 
 import static org.junit.Assert.*;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -28,6 +29,18 @@ public class JobseekerTest
   private Job developerJob;
   private Job architectJob;
 
+  @Test
+  public void thereCanBeMoreThanOneJobseekersWithSameName()
+  {
+    Jobseeker jobseeker1 = Jobseeker.named("Tom");    
+    Jobseeker jobseeker2 = Jobseeker.named("Tom");    
+    Jobseeker jobseeker3 = Jobseeker.named("Tom");   
+    
+    Assert.assertNotEquals(jobseeker1, jobseeker2);
+    Assert.assertNotEquals(jobseeker1, jobseeker3);
+    Assert.assertNotEquals(jobseeker2, jobseeker3);
+  }
+  
   @Test
   public void jobseekerCanSaveJob()
   {

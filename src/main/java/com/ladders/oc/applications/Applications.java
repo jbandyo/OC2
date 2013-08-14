@@ -16,6 +16,11 @@ public class Applications implements DisplayableApplications, Iterable<Applicati
     appSet.add(app);
   }
 
+  public int count()
+  {
+    return appSet.size();
+  }
+
   @Override
   public void displayTo(ApplicationsDisplayer appsDisplayer)
   {

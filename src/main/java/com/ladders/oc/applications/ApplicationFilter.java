@@ -4,7 +4,6 @@ import java.util.Date;
 
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobseekers.Jobseeker;
-import com.theladders.confident.Maybe;
 
 class ApplicationFilter
 {

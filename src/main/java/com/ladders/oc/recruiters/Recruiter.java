@@ -1,9 +1,6 @@
 package com.ladders.oc.recruiters;
 
-import java.util.Date;
-
 import com.ladders.oc.Name;
-import com.ladders.oc.applications.ApplicationQueryHelper;
 import com.ladders.oc.applications.RecruiterApplicationQueryHelper;
 import com.ladders.oc.displayables.DisplayableRecruiter;
 import com.ladders.oc.displayers.RecruiterDisplayer;
