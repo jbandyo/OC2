@@ -1,12 +1,12 @@
 package com.ladders.oc.displayers;
 
-import com.ladders.oc.jobs.JobTitle;
+import com.ladders.oc.displayables.DisplayableJobTitle;
 
 public class ConsoleJobDisplayer implements JobDisplayer
 {
 
   @Override
-  public void displayJob(JobTitle title)
+  public void displayJob(DisplayableJobTitle title)
   {
     JobTitleDisplayer titleDisplayer = new ConsoleJobTitleDisplayer();
     title.displayTo(titleDisplayer);

@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.ladders.oc.jobs.Job;
-import com.ladders.oc.jobseekers.Jobseeker;
 
 public class ApplicationRepository
 {

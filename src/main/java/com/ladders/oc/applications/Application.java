@@ -14,11 +14,12 @@ public class Application implements DisplayableApplication
   private final Date  date;
 
   public Application(Job job,
-                     Jobseeker jobseeker)
+                     Jobseeker jobseeker,
+                     Date date)
   {
     this.job = job;
     this.jobseeker = jobseeker;
-    date = new Date();
+    this.date = date;
   }
 
   public boolean containsJob(Job job)

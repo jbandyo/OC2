@@ -1,9 +1,8 @@
 package com.ladders.oc.displayers;
 
-import com.ladders.oc.jobs.JobTitle;
+import com.ladders.oc.displayables.DisplayableJobTitle;
 
 public interface JobDisplayer
 {
-  void displayJob(JobTitle title);
-
+  void displayJob(DisplayableJobTitle title);
 }

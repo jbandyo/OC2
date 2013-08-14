@@ -2,27 +2,29 @@ package com.ladders.oc.recruiters;
 
 import static org.junit.Assert.*;
 
-import org.junit.AfterClass;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.Test;
 
+import org.mockito.*;
+
 import com.ladders.oc.Name;
+import com.ladders.oc.argmatchers.*;
 import com.ladders.oc.applications.ApplicationProcessor;
 import com.ladders.oc.applications.ApplicationRepository;
 import com.ladders.oc.applications.Applications;
+import com.ladders.oc.applications.TimeServer;
+import com.ladders.oc.displayables.DisplayableName;
 import com.ladders.oc.displayers.ApplicationsDisplayer;
-import com.ladders.oc.displayers.ConsoleApplicationsJobseekerDisplayer;
-import com.ladders.oc.displayers.ConsoleJobsDisplayer;
-import com.ladders.oc.displayers.ConsoleRecruiterDisplayer;
 import com.ladders.oc.displayers.JobsDisplayer;
 import com.ladders.oc.displayers.RecruiterDisplayer;
 import com.ladders.oc.jobs.ATSJob;
 import com.ladders.oc.jobs.JReqJob;
 import com.ladders.oc.jobs.Job;
-import com.ladders.oc.jobs.JobTitle;
 import com.ladders.oc.jobs.Jobs;
 import com.ladders.oc.jobseekers.Jobseeker;
-import com.ladders.oc.resumes.Resume;
-import com.theladders.confident.Maybe;
 
 public class RecruiterTest
 {
@@ -56,10 +58,11 @@ public class RecruiterTest
   public void recruitersAreDisplayedByName()
   {
     Recruiter recruiter = Recruiter.named("George");
-    RecruiterDisplayer recDisplayer = new ConsoleRecruiterDisplayer();
-    System.out.println("Display Recruiter");
-    recruiter.displayTo(recDisplayer);    
-    System.out.println();
+    RecruiterDisplayer recDisplayer = Mockito.mock(RecruiterDisplayer.class);
+    recruiter.displayTo(recDisplayer);
+
+    DisplayableName name = new Name("George");
+    Mockito.verify(recDisplayer).displayRecruiter(name);
   }
 
   @Test
@@ -86,10 +89,9 @@ public class RecruiterTest
  
     Jobs jobs = recruiter.getPostedJobs();
     
-    JobsDisplayer jobsDisplayer = new ConsoleJobsDisplayer();
-    System.out.println("Posted Jobs");
+    JobsDisplayer jobsDisplayer = Mockito.mock(JobsDisplayer.class);
     jobs.displayTo(jobsDisplayer);
-    System.out.println();
+    Mockito.verify(jobsDisplayer).displayJobs(Matchers.argThat(new SetOfThreeJobs(developerJob, architectJob, programmerJob)));
   }
   
   @Test
@@ -104,31 +106,81 @@ public class RecruiterTest
 
     applyStatus = jobseekerTom.applyFor(developerJob).to(appProcessor);
     assertTrue(applyStatus);
+    applyStatus = jobseekerHarry.applyFor(developerJob).to(appProcessor);
+    assertTrue(applyStatus);
     applyStatus = jobseekerTom.applyFor(architectJob).to(appProcessor);
     assertTrue(applyStatus);
     applyStatus = jobseekerDick.applyFor(architectJob).to(appProcessor);
     assertTrue(applyStatus);
-    applyStatus = jobseekerHarry.applyFor(developerJob).to(appProcessor);
-    assertTrue(applyStatus);
 
-    Applications developerApps = recruiter.getApplicationsBy(developerJob).from(appRepo);
-    assertNotNull(developerApps);
+    Applications developerApps = recruiter.getApplications().filterBy(developerJob).from(appRepo);
 
-    ApplicationsDisplayer appsDisplayer = new ConsoleApplicationsJobseekerDisplayer();
-    System.out.println("Jobseekers for Developer job");
+    ApplicationsDisplayer appsDisplayer = Mockito.mock(ApplicationsDisplayer.class);
     developerApps.displayTo(appsDisplayer);
+    Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfTwoAppsWithJobSeekers(jobseekerTom, jobseekerHarry)));
 
-    Applications archApplications = recruiter.getApplicationsBy(architectJob).from(appRepo);
-    assertNotNull(archApplications);
+    Applications architectApps = recruiter.getApplications().filterBy(architectJob).from(appRepo);
 
-    System.out.println("Jobseekers for Architect job");
-    archApplications.displayTo(appsDisplayer);
+    appsDisplayer = Mockito.mock(ApplicationsDisplayer.class);
+    architectApps.displayTo(appsDisplayer);
+    Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfTwoAppsWithJobSeekers(jobseekerTom, jobseekerDick)));
   }
 
+  @Test
+  public void recruitersCanSeeJobseekersByJobAndDate()
+  {
+    setupActors();
+    recruiter.post(developerJob);
+    recruiter.post(architectJob);
+
+    ApplicationRepository appRepo = new ApplicationRepository();
+    TimeServer timeServerOne = Mockito.mock(TimeServer.class);
+    TimeServer timeServerTwo = Mockito.mock(TimeServer.class);
+    Date dayOne = null;
+    Date dayTwo = null;
+    try
+    {
+      dayOne = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2013-05-01 12:30:00");
+      dayTwo = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2013-07-04 12:30:00");
+    }
+    catch (ParseException e)
+    {
+      fail();
+    }
+    Mockito.when(timeServerOne.getCurrentTime()).thenReturn(dayOne);
+    Mockito.when(timeServerTwo.getCurrentTime()).thenReturn(dayTwo);
+    ApplicationProcessor appProcessorOne = new ApplicationProcessor(appRepo, timeServerOne);
+    ApplicationProcessor appProcessorTwo = new ApplicationProcessor(appRepo, timeServerTwo);
+
+    boolean applyStatus;
+
+    applyStatus = jobseekerTom.applyFor(developerJob).to(appProcessorOne);
+    assertTrue(applyStatus);
+    applyStatus = jobseekerHarry.applyFor(developerJob).to(appProcessorOne);
+    assertTrue(applyStatus);
+    applyStatus = jobseekerTom.applyFor(architectJob).to(appProcessorTwo);
+    assertTrue(applyStatus);
+    applyStatus = jobseekerDick.applyFor(architectJob).to(appProcessorTwo);
+    assertTrue(applyStatus);
+
+    Applications appsOnDayOne = recruiter.getApplications().filterBy(dayOne).from(appRepo);
+
+    ApplicationsDisplayer appsDisplayer = Mockito.mock(ApplicationsDisplayer.class);
+    appsOnDayOne.displayTo(appsDisplayer);
+    Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfTwoAppsWithDates(dayOne)));
+
+    Applications appsOnDayTwoForArchitect = recruiter.getApplications().filterBy(architectJob).filterBy(dayTwo).from(appRepo);
+
+    appsDisplayer = Mockito.mock(ApplicationsDisplayer.class);
+    appsOnDayTwoForArchitect.displayTo(appsDisplayer);
+    Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfTwoAppsWithJobsAndDates(dayTwo, architectJob)));
+  }
+  
   private void setupApplicationRepository()
   {
     appRepo = new ApplicationRepository();
-    appProcessor = new ApplicationProcessor(appRepo);
+    TimeServer timeServer = new TimeServer();
+    appProcessor = new ApplicationProcessor(appRepo, timeServer);
   }
   
   private void setupActors()
@@ -141,5 +193,5 @@ public class RecruiterTest
     jobseekerHarry = Jobseeker.named("Harry");    
     recruiter      = Recruiter.named("George");
   }
-
+  
 }

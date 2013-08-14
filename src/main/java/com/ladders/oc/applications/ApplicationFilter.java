@@ -8,37 +8,37 @@ import com.theladders.confident.Maybe;
 
 class ApplicationFilter
 {
-  private Maybe<Job> job = Maybe.nothing();
-  private Maybe<Jobseeker> jobseeker = Maybe.nothing();
-  private Maybe<Date> date = Maybe.nothing();
+  private Job job = null;
+  private Jobseeker jobseeker = null;
+  private Date date = null;
   
   public ApplicationFilter byJob(Job job)
   {
-    this.job = Maybe.just(job);
+    this.job = job;
     return this;
   }
 
   public ApplicationFilter byJobseeker(Jobseeker jobseeker)
   {
-    this.jobseeker = Maybe.just(jobseeker);
+    this.jobseeker = jobseeker;
     return this;
   }
 
   public ApplicationFilter byDate(Date date)
   {
-    this.date = Maybe.just(date);
+    this.date = date;
     return this;
   }
-
+  
   public boolean pass(Application application)
   {
-    if ((job.isSomething()) && (!application.containsJob(job.get())))
+    if ((job != null) && (!application.containsJob(job)))
       return false;
     
-    if ((jobseeker.isSomething()) && (!application.containsJobseeker(jobseeker.get())))
+    if ((jobseeker != null) && (!application.containsJobseeker(jobseeker)))
       return false;
       
-    if ((date.isSomething()) && (!application.containsDate(date.get())))
+    if ((date != null) && (!application.containsDate(date)))
       return false;
     
     return true;

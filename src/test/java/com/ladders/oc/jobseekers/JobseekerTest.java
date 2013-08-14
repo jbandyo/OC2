@@ -2,26 +2,23 @@ package com.ladders.oc.jobseekers;
 
 import static org.junit.Assert.*;
 
-import org.junit.AfterClass;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
-import com.ladders.oc.Name;
 import com.ladders.oc.applications.ApplicationProcessor;
 import com.ladders.oc.applications.ApplicationRepository;
 import com.ladders.oc.applications.Applications;
+import com.ladders.oc.applications.TimeServer;
+import com.ladders.oc.argmatchers.SetOfThreeAppsWithJobs;
+import com.ladders.oc.argmatchers.SetOfThreeJobs;
 import com.ladders.oc.displayers.ApplicationsDisplayer;
-import com.ladders.oc.displayers.ConsoleApplicationsJobsDisplayer;
-import com.ladders.oc.displayers.ConsoleApplicationsJobseekerDisplayer;
-import com.ladders.oc.displayers.ConsoleJobsDisplayer;
 import com.ladders.oc.displayers.JobsDisplayer;
 import com.ladders.oc.jobs.ATSJob;
 import com.ladders.oc.jobs.JReqJob;
 import com.ladders.oc.jobs.Job;
-import com.ladders.oc.jobs.JobTitle;
 import com.ladders.oc.jobs.Jobs;
-import com.ladders.oc.recruiters.Recruiter;
 import com.ladders.oc.resumes.Resume;
-import com.theladders.confident.Maybe;
 
 public class JobseekerTest
 {
@@ -47,7 +44,9 @@ public class JobseekerTest
     jobseeker.saveJob(programmerJob);
     jobseeker.saveJob(developerJob);
     jobseeker.saveJob(architectJob);
+
     Jobs jobs = jobseeker.getSavedJobs();
+ 
     assertTrue(jobs.contains(programmerJob));
     assertTrue(jobs.contains(developerJob));
     assertTrue(jobs.contains(architectJob));
@@ -61,11 +60,13 @@ public class JobseekerTest
     jobseeker.saveJob(programmerJob);
     jobseeker.saveJob(developerJob);
     jobseeker.saveJob(architectJob);
+    
     Jobs jobs = jobseeker.getSavedJobs();
-    JobsDisplayer jobsDisplayer = new ConsoleJobsDisplayer();
-    System.out.println("Display saved Jobs:");
+    assertNotNull(jobs);
+   
+    JobsDisplayer jobsDisplayer = Mockito.mock(JobsDisplayer.class);
     jobs.displayTo(jobsDisplayer);
-    System.out.println();
+    Mockito.verify(jobsDisplayer).displayJobs(Matchers.argThat(new SetOfThreeJobs(developerJob, architectJob, programmerJob)));
   }
 
   @Test
@@ -129,31 +130,6 @@ public class JobseekerTest
   }
 
   @Test
-  public void jobSeekersCanListJobsToWhichTheyApplied()
-  {
-    setupApplicationRepository();
-    setupJobs();
-    Jobseeker jobseekerTom = Jobseeker.named("Tom");    
-    Resume architectResume = Resume.createdBy(jobseekerTom);
-    Resume developerResume = Resume.createdBy(jobseekerTom);
-    
-    boolean applyStatus;
-    applyStatus = jobseekerTom.applyFor(architectJob).with(architectResume).to(appProcessor);
-    assertTrue(applyStatus);
-
-    applyStatus = jobseekerTom.applyFor(developerJob).with(developerResume).to(appProcessor);
-    assertTrue(applyStatus);
-
-    applyStatus = jobseekerTom.applyFor(programmerJob).to(appProcessor);
-    assertTrue(applyStatus);
-    
-    Applications applications = jobseekerTom.getJobsAppliedTo().from(appRepo);
-    //assertTrue(jobs.contains(architectJob));
-    //assertTrue(jobs.contains(developerJob));
-    //assertTrue(jobs.contains(programmerJob));
-  }
-
-  @Test
   public void jobSeekersCanDisplayJobsToWhichTheyApplied()
   {
     setupApplicationRepository();
@@ -173,16 +149,17 @@ public class JobseekerTest
     assertTrue(applyStatus);
     
     Applications applications = jobseekerTom.getJobsAppliedTo().from(appRepo);
-    ApplicationsDisplayer appsDisplayer = new ConsoleApplicationsJobsDisplayer();
-    System.out.println("Display Jobs applied to by Tom:");
+
+    ApplicationsDisplayer appsDisplayer = Mockito.mock(ApplicationsDisplayer.class);
     applications.displayTo(appsDisplayer);
-    System.out.println();
+    Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfThreeAppsWithJobs(architectJob, developerJob, programmerJob)));
   }
 
   private void setupApplicationRepository()
   {
     appRepo = new ApplicationRepository();
-    appProcessor = new ApplicationProcessor(appRepo);
+    TimeServer timeServer = new TimeServer();
+    appProcessor = new ApplicationProcessor(appRepo, timeServer);
   }
   
   private void setupJobs()

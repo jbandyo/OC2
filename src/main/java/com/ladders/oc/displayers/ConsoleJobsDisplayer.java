@@ -2,16 +2,16 @@ package com.ladders.oc.displayers;
 
 import java.util.Set;
 
-import com.ladders.oc.jobs.Job;
+import com.ladders.oc.displayables.DisplayableJob;
 
 public class ConsoleJobsDisplayer implements JobsDisplayer
 {
 
   @Override
-  public void displayJobs(Set<Job> jobSet)
+  public void displayJobs(Set<? extends DisplayableJob> jobSet)
   {
     JobDisplayer displayer = new ConsoleJobDisplayer();
-    for (Job job : jobSet)
+    for (DisplayableJob job : jobSet)
     {
       System.out.print("- ");
       job.displayTo(displayer);

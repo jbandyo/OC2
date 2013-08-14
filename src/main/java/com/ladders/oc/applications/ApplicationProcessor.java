@@ -7,11 +7,13 @@ import com.theladders.confident.Maybe;
 
 public class ApplicationProcessor
 {
-  ApplicationRepository applicationRepository;
+  private final ApplicationRepository applicationRepository;
+  private final TimeServer timeServer;
 
-  public ApplicationProcessor(ApplicationRepository appRepo)
+  public ApplicationProcessor(ApplicationRepository appRepo, TimeServer timeServer)
   {
     applicationRepository = appRepo;
+    this.timeServer = timeServer;
   }
 
   public boolean apply(Jobseeker jobseeker,
@@ -21,7 +23,7 @@ public class ApplicationProcessor
     if (!isValidApplication(jobseeker, job, resume))
       return false;
     
-    Application app = new Application(job, jobseeker);
+    Application app = new Application(job, jobseeker, timeServer.getCurrentTime());
     applicationRepository.addApplication(app);
 
     return true;

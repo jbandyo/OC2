@@ -1,9 +1,10 @@
 package com.ladders.oc.recruiters;
 
+import java.util.Date;
+
 import com.ladders.oc.Name;
 import com.ladders.oc.applications.ApplicationQueryHelper;
-import com.ladders.oc.applications.ApplicationRepository;
-import com.ladders.oc.applications.Applications;
+import com.ladders.oc.applications.RecruiterApplicationQueryHelper;
 import com.ladders.oc.displayables.DisplayableRecruiter;
 import com.ladders.oc.displayers.RecruiterDisplayer;
 import com.ladders.oc.jobs.Job;
@@ -34,9 +35,9 @@ public class Recruiter implements DisplayableRecruiter
     return jobs;
   }
 
-  public ApplicationQueryHelper getApplicationsBy(Job job)
+  public RecruiterApplicationQueryHelper getApplications()
   {
-    return new ApplicationQueryHelper(job);
+    return new RecruiterApplicationQueryHelper(this);
   }
 
   @Override
@@ -44,7 +45,5 @@ public class Recruiter implements DisplayableRecruiter
   {
     displayer.displayRecruiter(name);    
   }
-
-
 
 }

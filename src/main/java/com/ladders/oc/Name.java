@@ -11,6 +11,20 @@ public class Name implements DisplayableName
   {
     this.name = name;
   }
+  
+  @Override
+  public boolean equals(Object o)
+  {
+    // check the class
+    Name otherName = (Name) o;
+    return name.equals(otherName.name);
+  }
+  
+  @Override
+  public int hashCode()
+  {
+    return name.hashCode();
+  }
 
   @Override
   public void displayTo(NameDisplayer displayer)

@@ -48,7 +48,9 @@ public class Jobseeker implements DisplayableJobseeker
 */
   public ApplicationQueryHelper getJobsAppliedTo()
   {
-    return new ApplicationQueryHelper(this);
+    ApplicationQueryHelper queryHelper = new ApplicationQueryHelper();
+    queryHelper.filterBy(this);
+    return queryHelper;
   }
 
   @Override

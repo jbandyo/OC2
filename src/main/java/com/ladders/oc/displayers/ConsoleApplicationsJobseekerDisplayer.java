@@ -8,7 +8,7 @@ public class ConsoleApplicationsJobseekerDisplayer implements ApplicationsDispla
 {
 
   @Override
-  public void displayApplications(Set<DisplayableApplication> appSet)
+  public void displayApplications(Set<? extends DisplayableApplication> appSet)
   {
     ApplicationDisplayer displayer = new ConsoleApplicationJobseekerDisplayer();
     for (DisplayableApplication app : appSet)

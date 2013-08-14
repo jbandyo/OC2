@@ -1,11 +1,10 @@
 package com.ladders.oc.jobs;
 
-import static org.junit.Assert.*;
-
 import org.junit.AfterClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
-import com.ladders.oc.displayers.ConsoleJobDisplayer;
+import com.ladders.oc.displayables.DisplayableJobTitle;
 import com.ladders.oc.displayers.JobDisplayer;
 
 public class JReqJobTest
@@ -19,10 +18,11 @@ public class JReqJobTest
   public void jobsAreDisplayedByTitle()
   {
     Job job = JReqJob.titled("Programmer");
-    JobDisplayer jobDisplayer = new ConsoleJobDisplayer();
-    System.out.println("Display Job:");
-    job.displayTo(jobDisplayer);    
-    System.out.println();
+    JobDisplayer jobDisplayer = Mockito.mock(JobDisplayer.class);
+    job.displayTo(jobDisplayer);
+    
+    DisplayableJobTitle title = new JobTitle("Programmer");
+    Mockito.verify(jobDisplayer).displayJob(title);
   }
 
 }

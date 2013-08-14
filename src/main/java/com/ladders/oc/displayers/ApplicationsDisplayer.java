@@ -7,6 +7,6 @@ import com.ladders.oc.displayables.DisplayableApplication;
 public interface ApplicationsDisplayer
 {
 
-  void displayApplications(Set<DisplayableApplication> appSet);
+  void displayApplications(Set<? extends DisplayableApplication> appSet);
 
 }
