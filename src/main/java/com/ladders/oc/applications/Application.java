@@ -4,27 +4,27 @@ import java.util.Date;
 
 import com.ladders.oc.displayables.DisplayableApplication;
 import com.ladders.oc.displayers.ApplicationDisplayer;
-import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobseekers.Jobseeker;
+import com.ladders.oc.recruiters.JobPosting;
 
 public class Application implements DisplayableApplication
 {
-  private final Job   job;
+  private final JobPosting jobPosting;
   private final Jobseeker  jobseeker;
   private final Date  date;
 
-  public Application(Job job,
-                     Jobseeker jobseeker,
+  public Application(JobPosting jobPosting,
+                     Jobseeker  jobseeker,
                      Date date)
   {
-    this.job = job;
-    this.jobseeker = jobseeker;
+    this.jobPosting = jobPosting;
+    this.jobseeker  = jobseeker;
     this.date = date;
   }
 
-  public boolean containsJob(Job job)
+  public boolean containsJobPosting(JobPosting jobPosting)
   {
-    return this.job == job;
+    return this.jobPosting == jobPosting;
   }
 
   public boolean containsJobseeker(Jobseeker jobseeker)
@@ -40,7 +40,7 @@ public class Application implements DisplayableApplication
   @Override
   public void displayTo(ApplicationDisplayer appDisplayer)
   {
-    appDisplayer.displayApplication(job, jobseeker, date);
+    appDisplayer.displayApplication(jobPosting, jobseeker, date);
   }
 
 }

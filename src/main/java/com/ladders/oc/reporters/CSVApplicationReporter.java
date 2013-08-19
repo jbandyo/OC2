@@ -3,7 +3,7 @@ package com.ladders.oc.reporters;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.ladders.oc.displayables.DisplayableJob;
+import com.ladders.oc.displayables.DisplayableJobPosting;
 import com.ladders.oc.displayables.DisplayableJobseeker;
 import com.ladders.oc.displayers.ApplicationDisplayer;
 
@@ -17,13 +17,13 @@ public class CSVApplicationReporter implements ApplicationDisplayer
   }
   
   @Override
-  public void displayApplication(DisplayableJob job,
+  public void displayApplication(DisplayableJobPosting jobPosting,
                                  DisplayableJobseeker jobseeker,
                                  Date date)
   {
-    TextJobReporter jobReporter = new TextJobReporter();
-    job.displayTo(jobReporter);
-    appText += jobReporter.getJobText();
+    TextJobPostingReporter jobPostingReporter = new TextJobPostingReporter();
+    jobPosting.displayTo(jobPostingReporter);
+    appText += jobPostingReporter.getJobPostingText();
     appText += ",";
 
     TextJobseekerReporter jobseekerReporter = new TextJobseekerReporter();

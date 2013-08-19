@@ -19,18 +19,18 @@ import com.ladders.oc.applications.Applications;
 import com.ladders.oc.applications.TimeServer;
 import com.ladders.oc.displayables.DisplayableName;
 import com.ladders.oc.displayers.ApplicationsDisplayer;
-import com.ladders.oc.displayers.JobsDisplayer;
+import com.ladders.oc.displayers.JobPostingsDisplayer;
 import com.ladders.oc.displayers.RecruiterDisplayer;
 import com.ladders.oc.jobs.ATSJob;
 import com.ladders.oc.jobs.JReqJob;
 import com.ladders.oc.jobs.Job;
-import com.ladders.oc.jobs.Jobs;
 import com.ladders.oc.jobseekers.Jobseeker;
 
 public class RecruiterTest
 {
   private ApplicationRepository appRepo;
   private ApplicationProcessor  appProcessor;
+  private JobRepository jobRepository;
   private Job programmerJob;
   private Job developerJob;
   private Job architectJob;
@@ -52,19 +52,14 @@ public class RecruiterTest
   }
 
   @Test
-  public void recruiterCanPostATSJob()
+  public void recruiterCanPostJob()
   {
     Recruiter recruiter = Recruiter.named("George");
     Job developerJob = ATSJob.titled("Developer");
-    recruiter.post(developerJob);
-  }
-
-  @Test
-  public void recruiterCanPostJReqJob()
-  {
-    Recruiter recruiter = Recruiter.named("George");
-    Job developerJob = JReqJob.titled("Developer");
-    recruiter.post(developerJob);
+    JobRepository jobRepository = Mockito.mock(JobRepository.class);
+    recruiter.post(developerJob).to(jobRepository);
+    JobPosting posting = new JobPosting(recruiter, developerJob);
+    Mockito.verify(jobRepository).add(posting);
   }
 
   @Test
@@ -82,57 +77,61 @@ public class RecruiterTest
   public void recruitersCanListJobsTheyPosted()
   {
     setupActors();
-    recruiter.post(developerJob);
-    recruiter.post(architectJob);
+    JobRepository jobRepository = new JobRepository();
+
+    recruiter.post(developerJob).to(jobRepository);
+    recruiter.post(architectJob).to(jobRepository);
     
-    Jobs jobs = recruiter.getPostedJobs();
+    JobPostings jobPostings = recruiter.getPostedJobs().from(jobRepository);
     
-    assertTrue(jobs.contains(developerJob));
-    assertTrue(jobs.contains(architectJob));
-    assertFalse(jobs.contains(programmerJob));
+    assertTrue(jobPostings.contains(developerJob));
+    assertTrue(jobPostings.contains(architectJob));
+    assertFalse(jobPostings.contains(programmerJob));
   }
 
   @Test
   public void recruitersCanDisplayJobsTheyPosted()
   {
     setupActors();
-    recruiter.post(developerJob);
-    recruiter.post(architectJob);
-    recruiter.post(programmerJob);
+    JobRepository jobRepository = new JobRepository();
+
+    JobPosting developerPosting = recruiter.post(developerJob).to(jobRepository);
+    JobPosting architectPosting = recruiter.post(architectJob).to(jobRepository);
+    JobPosting programmerPosting = recruiter.post(programmerJob).to(jobRepository);
  
-    Jobs jobs = recruiter.getPostedJobs();
+    JobPostings jobPostings = recruiter.getPostedJobs().from(jobRepository);
     
-    JobsDisplayer jobsDisplayer = Mockito.mock(JobsDisplayer.class);
-    jobs.displayTo(jobsDisplayer);
-    Mockito.verify(jobsDisplayer).displayJobs(Matchers.argThat(new SetOfThreeJobs(developerJob, architectJob, programmerJob)));
+    JobPostingsDisplayer postingsDisplayer = Mockito.mock(JobPostingsDisplayer.class);
+    jobPostings.displayTo(postingsDisplayer);
+    Mockito.verify(postingsDisplayer).displayJobPostings(Matchers.argThat(new SetOfThreeJobPostings(developerPosting, architectPosting, programmerPosting)));
   }
   
   @Test
   public void recruitersCanSeeJobseekersByJob()
   {
     setupActors();
-    recruiter.post(developerJob);
-    recruiter.post(architectJob);
+    setupRepositories();
+
+    JobPosting developerPosting = recruiter.post(developerJob).to(jobRepository);
+    JobPosting architectPosting = recruiter.post(architectJob).to(jobRepository);
     
-    setupApplicationRepository();
     boolean applyStatus;
+    applyStatus = jobseekerTom.applyFor(developerPosting).to(appProcessor);
+    assertTrue(applyStatus);
+    applyStatus = jobseekerHarry.applyFor(developerPosting).to(appProcessor);
+    assertTrue(applyStatus);
+    applyStatus = jobseekerTom.applyFor(architectPosting).to(appProcessor);
+    assertTrue(applyStatus);
+    applyStatus = jobseekerDick.applyFor(architectPosting).to(appProcessor);
+    assertTrue(applyStatus);
 
-    applyStatus = jobseekerTom.applyFor(developerJob).to(appProcessor);
-    assertTrue(applyStatus);
-    applyStatus = jobseekerHarry.applyFor(developerJob).to(appProcessor);
-    assertTrue(applyStatus);
-    applyStatus = jobseekerTom.applyFor(architectJob).to(appProcessor);
-    assertTrue(applyStatus);
-    applyStatus = jobseekerDick.applyFor(architectJob).to(appProcessor);
-    assertTrue(applyStatus);
-
-    Applications developerApps = recruiter.getApplications().filterBy(developerJob).from(appRepo);
+    Applications developerApps = recruiter.getApplications().filterBy(developerPosting).from(appRepo);
 
     ApplicationsDisplayer appsDisplayer = Mockito.mock(ApplicationsDisplayer.class);
     developerApps.displayTo(appsDisplayer);
     Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfTwoAppsWithJobSeekers(jobseekerTom, jobseekerHarry)));
 
-    Applications architectApps = recruiter.getApplications().filterBy(architectJob).from(appRepo);
+    Applications architectApps = recruiter.getApplications().filterBy(architectPosting).from(appRepo);
 
     appsDisplayer = Mockito.mock(ApplicationsDisplayer.class);
     architectApps.displayTo(appsDisplayer);
@@ -142,11 +141,11 @@ public class RecruiterTest
   @Test
   public void recruitersCanSeeJobseekersByJobAndDate()
   {
+    setupRepositories();
     setupActors();
-    recruiter.post(developerJob);
-    recruiter.post(architectJob);
+    JobPosting developerPosting = recruiter.post(developerJob).to(jobRepository);
+    JobPosting architectPosting = recruiter.post(architectJob).to(jobRepository);
 
-    ApplicationRepository appRepo = new ApplicationRepository();
     TimeServer timeServerOne = Mockito.mock(TimeServer.class);
     TimeServer timeServerTwo = Mockito.mock(TimeServer.class);
     Date dayOne = null;
@@ -167,13 +166,13 @@ public class RecruiterTest
 
     boolean applyStatus;
 
-    applyStatus = jobseekerTom.applyFor(developerJob).to(appProcessorOne);
+    applyStatus = jobseekerTom.applyFor(developerPosting).to(appProcessorOne);
     assertTrue(applyStatus);
-    applyStatus = jobseekerHarry.applyFor(developerJob).to(appProcessorOne);
+    applyStatus = jobseekerHarry.applyFor(developerPosting).to(appProcessorOne);
     assertTrue(applyStatus);
-    applyStatus = jobseekerTom.applyFor(architectJob).to(appProcessorTwo);
+    applyStatus = jobseekerTom.applyFor(architectPosting).to(appProcessorTwo);
     assertTrue(applyStatus);
-    applyStatus = jobseekerDick.applyFor(architectJob).to(appProcessorTwo);
+    applyStatus = jobseekerDick.applyFor(architectPosting).to(appProcessorTwo);
     assertTrue(applyStatus);
 
     Applications appsOnDayOne = recruiter.getApplications().filterBy(dayOne).from(appRepo);
@@ -182,18 +181,19 @@ public class RecruiterTest
     appsOnDayOne.displayTo(appsDisplayer);
     Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfTwoAppsWithDates(dayOne)));
 
-    Applications appsOnDayTwoForArchitect = recruiter.getApplications().filterBy(architectJob).filterBy(dayTwo).from(appRepo);
+    Applications appsOnDayTwoForArchitect = recruiter.getApplications().filterBy(architectPosting).filterBy(dayTwo).from(appRepo);
 
     appsDisplayer = Mockito.mock(ApplicationsDisplayer.class);
     appsOnDayTwoForArchitect.displayTo(appsDisplayer);
-    Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfTwoAppsWithJobsAndDates(dayTwo, architectJob)));
+    Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfTwoAppsWithJobPostingsAndDates(dayTwo, architectPosting)));
   }
   
-  private void setupApplicationRepository()
+  private void setupRepositories()
   {
     appRepo = new ApplicationRepository();
     TimeServer timeServer = new TimeServer();
     appProcessor = new ApplicationProcessor(appRepo, timeServer);
+    jobRepository = new JobRepository();
   }
   
   private void setupActors()

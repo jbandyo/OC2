@@ -11,9 +11,9 @@ public class Jobs implements DisplayableJobs, Iterable<Job>
 {
   private final Set<Job> jobSet = new HashSet<Job>();
 
-  public boolean add(Job job)
+  public void add(Job job)
   {
-    return jobSet.add(job);    
+    jobSet.add(job);    
   }
     
   public boolean contains(Job job)

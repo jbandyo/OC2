@@ -35,7 +35,6 @@ public class HTMLApplicationsReporter implements ApplicationsDisplayer
       HTMLApplicationReporter appReporter = new HTMLApplicationReporter();
       app.displayTo(appReporter);
       htmlText += appReporter.getApplicationText();
-      htmlText += "\n";
     }
     htmlText += "</table>\n";
   }

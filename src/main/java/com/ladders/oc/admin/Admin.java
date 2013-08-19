@@ -6,7 +6,7 @@ import java.util.Date;
 import com.ladders.oc.applications.ApplicationQueryHelper;
 import com.ladders.oc.applications.ApplicationRepository;
 import com.ladders.oc.applications.Applications;
-import com.ladders.oc.jobs.Job;
+import com.ladders.oc.recruiters.JobPosting;
 import com.ladders.oc.reporters.CSVApplicationsReporter;
 import com.ladders.oc.reporters.HTMLApplicationsReporter;
 
@@ -44,10 +44,10 @@ public class Admin
     return htmlReporter.getApplicationsReport();
   }
 
-  public int getAggregateApplicationsBy(Job job)
+  public int getAggregateApplicationsBy(JobPosting jobPosting)
   {
     ApplicationQueryHelper queryHelper = new ApplicationQueryHelper();
-    Applications applications = queryHelper.filterBy(job).from(appRepo);
+    Applications applications = queryHelper.filterBy(jobPosting).from(appRepo);
     return applications.count();
   }
 

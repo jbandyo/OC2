@@ -1,32 +1,32 @@
 package com.ladders.oc.jobseekers;
 
 import com.ladders.oc.applications.ApplicationProcessor;
-import com.ladders.oc.jobs.Job;
+import com.ladders.oc.recruiters.JobPosting;
 import com.ladders.oc.resumes.Resume;
 import com.theladders.confident.Maybe;
 
 public class ApplicationHelper
 {
-  private final Jobseeker jobseeker;
-  private final Job job;
+  private final Jobseeker  jobseeker;
+  private final JobPosting jobPosting;
   
   ApplicationHelper(Jobseeker jobseeker,
-                           Job job)
+                           JobPosting jobPosting)
   {
-    this.jobseeker = jobseeker;
-    this.job = job;
+    this.jobseeker  = jobseeker;
+    this.jobPosting = jobPosting;
   }
 
   public SubmitHelper with(Resume resume)
   {
     Maybe<Resume> actualResume = Maybe.just(resume);
-    return new SubmitHelper(jobseeker, job, actualResume);
+    return new SubmitHelper(jobseeker, jobPosting, actualResume);
   }
 
   public boolean to(ApplicationProcessor applicationProcessor)
   {
     Maybe<Resume> noResume = Maybe.nothing();
-    return applicationProcessor.apply(jobseeker, job, noResume);
+    return applicationProcessor.apply(jobseeker, jobPosting, noResume);
   }
 
 }

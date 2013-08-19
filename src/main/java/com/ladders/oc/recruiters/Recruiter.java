@@ -1,16 +1,14 @@
 package com.ladders.oc.recruiters;
 
 import com.ladders.oc.Name;
-import com.ladders.oc.applications.RecruiterApplicationQueryHelper;
+import com.ladders.oc.applications.ApplicationQueryHelper;
 import com.ladders.oc.displayables.DisplayableRecruiter;
 import com.ladders.oc.displayers.RecruiterDisplayer;
 import com.ladders.oc.jobs.Job;
-import com.ladders.oc.jobs.Jobs;
 
 public class Recruiter implements DisplayableRecruiter
 {
   private final Name name;
-  private final Jobs jobs = new Jobs();
 
   public static Recruiter named(String name)
   {
@@ -22,19 +20,21 @@ public class Recruiter implements DisplayableRecruiter
     this.name = name;
   }
 
-  public void post(Job job)
+  public PostingHelper post(Job job)
   {
-    jobs.add(job);
+    PostingHelper helper = new PostingHelper(this, job);
+    return helper;
   }
 
-  public Jobs getPostedJobs()
+  public PostingQueryHelper getPostedJobs()
   {
-    return jobs;
+    PostingQueryHelper queryHelper = new PostingQueryHelper(this);
+    return queryHelper;
   }
 
-  public RecruiterApplicationQueryHelper getApplications()
+  public ApplicationQueryHelper getApplications()
   {
-    return new RecruiterApplicationQueryHelper(this);
+    return new ApplicationQueryHelper();
   }
 
   @Override

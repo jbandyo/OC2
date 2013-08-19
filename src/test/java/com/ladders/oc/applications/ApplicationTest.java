@@ -11,36 +11,43 @@ import org.junit.Test;
 import com.ladders.oc.jobs.ATSJob;
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobseekers.Jobseeker;
+import com.ladders.oc.recruiters.JobPosting;
+import com.ladders.oc.recruiters.JobRepository;
+import com.ladders.oc.recruiters.Recruiter;
 
 public class ApplicationTest
 {
+  private JobRepository jobRepository;
+  private Recruiter recruiter1;
+  private Job job1;
+  private Job job2;
+  private JobPosting developerPosting;
+  private JobPosting architectPosting;
+  private Jobseeker jobseekerTom;
+  private Jobseeker jobseekerDick;
+
   @Test
   public void checkingForJobWorks()
   {
-    Job job1 = ATSJob.titled("Developer");    
-    Job job2 = ATSJob.titled("Programmer");    
-    Jobseeker jobseeker = Jobseeker.named("Tom");    
-    Application app = new Application(job1, jobseeker, new Date());
-    assertFalse(app.containsJob(job2));
-    assertTrue(app.containsJob(job1));
+    SetupEnvironment();
+    Application app = new Application(developerPosting, jobseekerTom, new Date());
+    assertTrue(app.containsJobPosting(developerPosting));
+    assertFalse(app.containsJobPosting(architectPosting));
   }
 
   @Test
   public void checkingForJobseekerWorks()
   {
-    Job job = ATSJob.titled("Developer");    
-    Jobseeker jobseekerTom = Jobseeker.named("Tom");    
-    Jobseeker jobseekerDick = Jobseeker.named("Dick");;    
-    Application app = new Application(job, jobseekerDick, new Date());
-    assertFalse(app.containsJobseeker(jobseekerTom));
+    SetupEnvironment();
+    Application app = new Application(developerPosting, jobseekerDick, new Date());
     assertTrue(app.containsJobseeker(jobseekerDick));
+    assertFalse(app.containsJobseeker(jobseekerTom));
   }
 
   @Test
   public void checkingForDateWorks()
   {
-    Job job = ATSJob.titled("Developer");    
-    Jobseeker jobseeker = Jobseeker.named("Tom");
+    SetupEnvironment();
     Date date = null;
     try
     {
@@ -50,10 +57,22 @@ public class ApplicationTest
     {
       fail();
     }
-    //
-    Application app = new Application(job, jobseeker, date);
+    
+    Application app = new Application(developerPosting, jobseekerTom, date);
     boolean result = app.containsDate(date);
     assertTrue(result);
+  }
+
+  private void SetupEnvironment()
+  {
+    jobRepository = new JobRepository();
+    recruiter1 = Recruiter.named("George");
+    job1 = ATSJob.titled("Developer");    
+    job2 = ATSJob.titled("Programmer");    
+    developerPosting = recruiter1.post(job1).to(jobRepository);
+    architectPosting = recruiter1.post(job2).to(jobRepository);
+    jobseekerTom = Jobseeker.named("Tom");    
+    jobseekerDick = Jobseeker.named("Dick");;    
   }
 
 }

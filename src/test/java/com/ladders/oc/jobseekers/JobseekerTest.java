@@ -11,23 +11,27 @@ import com.ladders.oc.applications.ApplicationProcessor;
 import com.ladders.oc.applications.ApplicationRepository;
 import com.ladders.oc.applications.Applications;
 import com.ladders.oc.applications.TimeServer;
-import com.ladders.oc.argmatchers.SetOfThreeAppsWithJobs;
-import com.ladders.oc.argmatchers.SetOfThreeJobs;
+import com.ladders.oc.argmatchers.SetOfThreeAppsWithJobPostings;
+import com.ladders.oc.argmatchers.SetOfThreeJobPostings;
 import com.ladders.oc.displayers.ApplicationsDisplayer;
-import com.ladders.oc.displayers.JobsDisplayer;
+import com.ladders.oc.displayers.JobPostingsDisplayer;
 import com.ladders.oc.jobs.ATSJob;
 import com.ladders.oc.jobs.JReqJob;
 import com.ladders.oc.jobs.Job;
-import com.ladders.oc.jobs.Jobs;
+import com.ladders.oc.recruiters.JobPosting;
+import com.ladders.oc.recruiters.JobPostings;
+import com.ladders.oc.recruiters.JobRepository;
+import com.ladders.oc.recruiters.Recruiter;
 import com.ladders.oc.resumes.Resume;
 
 public class JobseekerTest
 {
   private ApplicationRepository appRepo;
   private ApplicationProcessor  appProcessor;
-  private Job programmerJob;
-  private Job developerJob;
-  private Job architectJob;
+  private JobRepository jobRepository;
+  private JobPosting developerPosting;
+  private JobPosting architectPosting;
+  private JobPosting programmerPosting;
 
   @Test
   public void thereCanBeMoreThanOneJobseekersWithSameName()
@@ -44,9 +48,8 @@ public class JobseekerTest
   @Test
   public void jobseekerCanSaveJob()
   {
-    Job job1 = ATSJob.titled("Developer");    
     Jobseeker jobseeker = Jobseeker.named("Tom");    
-    jobseeker.saveJob(job1);
+    jobseeker.saveJobPosting(programmerPosting);
   }
 
   @Test
@@ -54,15 +57,15 @@ public class JobseekerTest
   {
     setupJobs();
     Jobseeker jobseeker = Jobseeker.named("Tom");    
-    jobseeker.saveJob(programmerJob);
-    jobseeker.saveJob(developerJob);
-    jobseeker.saveJob(architectJob);
+    jobseeker.saveJobPosting(programmerPosting);
+    jobseeker.saveJobPosting(developerPosting);
+    jobseeker.saveJobPosting(architectPosting);
 
-    Jobs jobs = jobseeker.getSavedJobs();
+    JobPostings postings = jobseeker.getSavedJobPostings();
  
-    assertTrue(jobs.contains(programmerJob));
-    assertTrue(jobs.contains(developerJob));
-    assertTrue(jobs.contains(architectJob));
+    assertTrue(postings.contains(programmerPosting));
+    assertTrue(postings.contains(developerPosting));
+    assertTrue(postings.contains(architectPosting));
   }
   
   @Test
@@ -70,105 +73,108 @@ public class JobseekerTest
   {
     setupJobs();
     Jobseeker jobseeker = Jobseeker.named("Tom");    
-    jobseeker.saveJob(programmerJob);
-    jobseeker.saveJob(developerJob);
-    jobseeker.saveJob(architectJob);
+    jobseeker.saveJobPosting(programmerPosting);
+    jobseeker.saveJobPosting(developerPosting);
+    jobseeker.saveJobPosting(architectPosting);
     
-    Jobs jobs = jobseeker.getSavedJobs();
-    assertNotNull(jobs);
+    JobPostings postings = jobseeker.getSavedJobPostings();
    
-    JobsDisplayer jobsDisplayer = Mockito.mock(JobsDisplayer.class);
-    jobs.displayTo(jobsDisplayer);
-    Mockito.verify(jobsDisplayer).displayJobs(Matchers.argThat(new SetOfThreeJobs(developerJob, architectJob, programmerJob)));
+    JobPostingsDisplayer postingsDisplayer = Mockito.mock(JobPostingsDisplayer.class);
+    postings.displayTo(postingsDisplayer);
+    Mockito.verify(postingsDisplayer).displayJobPostings(Matchers.argThat(new SetOfThreeJobPostings(developerPosting, architectPosting, programmerPosting)));
   }
 
   @Test
   public void jobSeekersCanApplyToATSJobsWithoutResume()
   {
-    setupApplicationRepository();
+    setupRepositories();
+    setupJobs();
     Jobseeker jobseekerTom = Jobseeker.named("Tom");    
-    Job developerJob = ATSJob.titled("Developer");
-    boolean applyStatus = jobseekerTom.applyFor(developerJob).to(appProcessor);
+    boolean applyStatus = jobseekerTom.applyFor(programmerPosting).to(appProcessor);
     assertTrue(applyStatus);
   }
 
   @Test
   public void jobSeekersCanApplyToJReqJobsWithResume()
   {
-    setupApplicationRepository();
+    setupRepositories();
+    setupJobs();
     Jobseeker jobseekerTom = Jobseeker.named("Tom");    
-    Job programmerJob = JReqJob.titled("Programmer");
     Resume resume = Resume.createdBy(jobseekerTom);
-    boolean applyStatus = jobseekerTom.applyFor(programmerJob).with(resume).to(appProcessor);
+    boolean applyStatus = jobseekerTom.applyFor(developerPosting).with(resume).to(appProcessor);
     assertTrue(applyStatus);
   }
 
   @Test
   public void jobSeekersCannotApplyToJReqJobsWithoutResume()
   {
-    setupApplicationRepository();
+    setupRepositories();
+    setupJobs();
     Jobseeker jobseekerTom = Jobseeker.named("Tom");    
-    Job programmerJob = JReqJob.titled("Programmer");
-    boolean applyStatus = jobseekerTom.applyFor(programmerJob).to(appProcessor);
+    boolean applyStatus = jobseekerTom.applyFor(developerPosting).to(appProcessor);
     assertFalse(applyStatus);
   }
 
   @Test
   public void jobSeekersCannotApplyToJobsWithOthersResume()
   {
-    setupApplicationRepository();
+    setupRepositories();
+    setupJobs();
     Jobseeker jobseekerTom = Jobseeker.named("Tom");    
     Jobseeker jobseekerDick = Jobseeker.named("Dick");    
     Resume dicksResume = Resume.createdBy(jobseekerDick);
-    Job programmerJob = JReqJob.titled("Programmer");
-    boolean applyStatus = jobseekerTom.applyFor(programmerJob).with(dicksResume).to(appProcessor);
+    boolean applyStatus = jobseekerTom.applyFor(developerPosting).with(dicksResume).to(appProcessor);
     assertFalse(applyStatus);
   }
 
   @Test
   public void jobSeekersCanApplyToDifferentJobsWithDifferentResume()
   {
+    setupRepositories();
     setupJobs();
-    setupApplicationRepository();
     Jobseeker jobseekerTom = Jobseeker.named("Tom");    
     Resume architectResume = Resume.createdBy(jobseekerTom);
     Resume developerResume = Resume.createdBy(jobseekerTom);
     
     boolean applyStatus;
-    applyStatus = jobseekerTom.applyFor(architectJob).with(architectResume).to(appProcessor);
+    applyStatus = jobseekerTom.applyFor(architectPosting).with(architectResume).to(appProcessor);
     assertTrue(applyStatus);
     
-    applyStatus = jobseekerTom.applyFor(developerJob).with(developerResume).to(appProcessor);
+    applyStatus = jobseekerTom.applyFor(developerPosting).with(developerResume).to(appProcessor);
     assertTrue(applyStatus);
   }
 
   @Test
   public void jobSeekersCanDisplayJobsToWhichTheyApplied()
   {
-    setupApplicationRepository();
+    setupRepositories();
     setupJobs();
     Jobseeker jobseekerTom = Jobseeker.named("Tom");    
     Resume architectResume = Resume.createdBy(jobseekerTom);
     Resume developerResume = Resume.createdBy(jobseekerTom);
+
+    Applications applications = jobseekerTom.getJobsAppliedTo().from(appRepo);
+    assertEquals(applications.count(), 0);
     
     boolean applyStatus;
-    applyStatus = jobseekerTom.applyFor(architectJob).with(architectResume).to(appProcessor);
+    applyStatus = jobseekerTom.applyFor(architectPosting).with(architectResume).to(appProcessor);
     assertTrue(applyStatus);
 
-    applyStatus = jobseekerTom.applyFor(developerJob).with(developerResume).to(appProcessor);
+    applyStatus = jobseekerTom.applyFor(developerPosting).with(developerResume).to(appProcessor);
     assertTrue(applyStatus);
 
-    applyStatus = jobseekerTom.applyFor(programmerJob).to(appProcessor);
+    applyStatus = jobseekerTom.applyFor(programmerPosting).to(appProcessor);
     assertTrue(applyStatus);
     
-    Applications applications = jobseekerTom.getJobsAppliedTo().from(appRepo);
+    applications = jobseekerTom.getJobsAppliedTo().from(appRepo);
+    assertEquals(applications.count(), 3);
 
     ApplicationsDisplayer appsDisplayer = Mockito.mock(ApplicationsDisplayer.class);
     applications.displayTo(appsDisplayer);
-    Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfThreeAppsWithJobs(architectJob, developerJob, programmerJob)));
+    Mockito.verify(appsDisplayer).displayApplications(Mockito.argThat(new SetOfThreeAppsWithJobPostings(architectPosting, developerPosting, programmerPosting)));
   }
 
-  private void setupApplicationRepository()
+  private void setupRepositories()
   {
     appRepo = new ApplicationRepository();
     TimeServer timeServer = new TimeServer();
@@ -177,9 +183,16 @@ public class JobseekerTest
   
   private void setupJobs()
   {
-    developerJob = JReqJob.titled("Developer");
-    architectJob = JReqJob.titled("Architect");
-    programmerJob = ATSJob.titled("Programmer");
+    jobRepository = new JobRepository();
+    Recruiter recruiter = Recruiter.named("George");
+
+    Job developerJob = JReqJob.titled("Developer");
+    Job architectJob = JReqJob.titled("Architect");
+    Job programmerJob = ATSJob.titled("Programmer");
+
+    developerPosting = recruiter.post(developerJob).to(jobRepository);
+    architectPosting = recruiter.post(architectJob).to(jobRepository);
+    programmerPosting = recruiter.post(programmerJob).to(jobRepository);
   }
 
 }

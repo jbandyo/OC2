@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.ladders.oc.jobs.Job;
+import com.ladders.oc.recruiters.JobPosting;
 
 public class ApplicationRepository
 {
@@ -16,10 +16,10 @@ public class ApplicationRepository
     appSet.add(app);
   }
 
-  public Applications getApplicationsByJob(Job job)
+  public Applications getApplicationsByJobPosting(JobPosting jobPosting)
   {
     ApplicationFilter filter = new ApplicationFilter();
-    filter = filter.byJob(job);
+    filter = filter.byJobPosting(jobPosting);
     return getApplications(filter);
   }
   

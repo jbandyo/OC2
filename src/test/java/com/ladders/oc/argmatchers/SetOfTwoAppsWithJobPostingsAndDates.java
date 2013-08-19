@@ -8,14 +8,18 @@ import org.mockito.Mockito;
 
 import com.ladders.oc.displayables.DisplayableApplication;
 import com.ladders.oc.displayers.ApplicationDisplayer;
+import com.ladders.oc.recruiters.JobPosting;
 
-public class SetOfTwoAppsWithDates extends ArgumentMatcher<Set<DisplayableApplication>>
+public class SetOfTwoAppsWithJobPostingsAndDates extends ArgumentMatcher<Set<DisplayableApplication>>
 {
   private final Date date;
-  
-  public SetOfTwoAppsWithDates(Date date)
+  private final JobPosting  jobPosting;
+
+  public SetOfTwoAppsWithJobPostingsAndDates(Date date,
+                                      JobPosting  jobPosting)
   {
     this.date = date;
+    this.jobPosting = jobPosting;
   }
 
   @Override
@@ -29,7 +33,7 @@ public class SetOfTwoAppsWithDates extends ArgumentMatcher<Set<DisplayableApplic
     {
       ApplicationDisplayer appDisplayer = Mockito.mock(ApplicationDisplayer.class);
       app.displayTo(appDisplayer);
-      Mockito.verify(appDisplayer).displayApplication(Mockito.argThat(new AnyJobPosting()), 
+      Mockito.verify(appDisplayer).displayApplication(Mockito.argThat(new OneJobPosting(jobPosting)), 
                                                       Mockito.argThat(new AnyJobseeker()),
                                                       Mockito.argThat(new OneDate(date)));
     }

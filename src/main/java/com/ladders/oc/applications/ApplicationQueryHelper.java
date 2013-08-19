@@ -2,8 +2,8 @@ package com.ladders.oc.applications;
 
 import java.util.Date;
 
-import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobseekers.Jobseeker;
+import com.ladders.oc.recruiters.JobPosting;
 
 public class ApplicationQueryHelper
 {
@@ -13,9 +13,9 @@ public class ApplicationQueryHelper
   {    
   }
 
-  public ApplicationQueryHelper filterBy(Job job)
+  public ApplicationQueryHelper filterBy(JobPosting jobPosting)
   {
-    filter = filter.byJob(job);
+    filter = filter.byJobPosting(jobPosting);
     return this;
   }
 

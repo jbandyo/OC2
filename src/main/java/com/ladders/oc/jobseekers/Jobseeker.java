@@ -4,14 +4,14 @@ import com.ladders.oc.Name;
 import com.ladders.oc.applications.ApplicationQueryHelper;
 import com.ladders.oc.displayables.DisplayableJobseeker;
 import com.ladders.oc.displayers.JobseekerDisplayer;
-import com.ladders.oc.jobs.Job;
-import com.ladders.oc.jobs.Jobs;
+import com.ladders.oc.recruiters.JobPosting;
+import com.ladders.oc.recruiters.JobPostings;
 
 public class Jobseeker implements DisplayableJobseeker
 {
 
   private final Name name;
-  private final Jobs savedJobs = new Jobs();
+  private final JobPostings savedJobPostings = new JobPostings();
 
   public static Jobseeker named(String name)
   {
@@ -23,29 +23,21 @@ public class Jobseeker implements DisplayableJobseeker
     this.name = name;
   }
   
-  public void saveJob(Job job)
+  public void saveJobPosting(JobPosting programmerPosting)
   {
-    savedJobs.add(job);
+    savedJobPostings.add(programmerPosting);
   }
 
-  public Jobs getSavedJobs()
+  public JobPostings getSavedJobPostings()
   {
-    return savedJobs;
+    return savedJobPostings;
   }
 
-  public ApplicationHelper applyFor(Job developerJob)
+  public ApplicationHelper applyFor(JobPosting jobPosting)
   {
-    return new ApplicationHelper(this, developerJob);
+    return new ApplicationHelper(this, jobPosting);
   }
-/*
-  public boolean applyToJob(ApplicationProcessor appProcessor, Job job, Maybe<Resume> resume)
-  {
-    boolean applyStatus = appProcessor.apply(this, job, resume);
-    if (applyStatus)
-      appliedToJobs.add(job);
-    return applyStatus;
-  }
-*/
+
   public ApplicationQueryHelper getJobsAppliedTo()
   {
     ApplicationQueryHelper queryHelper = new ApplicationQueryHelper();

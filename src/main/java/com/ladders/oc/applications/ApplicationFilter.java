@@ -2,18 +2,18 @@ package com.ladders.oc.applications;
 
 import java.util.Date;
 
-import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobseekers.Jobseeker;
+import com.ladders.oc.recruiters.JobPosting;
 
 class ApplicationFilter
 {
-  private Job job = null;
+  private JobPosting jobPosting;
   private Jobseeker jobseeker = null;
   private Date date = null;
   
-  public ApplicationFilter byJob(Job job)
+  public ApplicationFilter byJobPosting(JobPosting jobPosting)
   {
-    this.job = job;
+    this.jobPosting = jobPosting;
     return this;
   }
 
@@ -28,10 +28,10 @@ class ApplicationFilter
     this.date = date;
     return this;
   }
-  
+
   public boolean pass(Application application)
   {
-    if ((job != null) && (!application.containsJob(job)))
+    if ((jobPosting != null) && (!application.containsJobPosting(jobPosting)))
       return false;
     
     if ((jobseeker != null) && (!application.containsJobseeker(jobseeker)))
@@ -42,5 +42,6 @@ class ApplicationFilter
     
     return true;
   }
+
 
 }

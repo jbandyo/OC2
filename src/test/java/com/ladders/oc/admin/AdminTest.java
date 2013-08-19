@@ -16,6 +16,9 @@ import com.ladders.oc.applications.TimeServer;
 import com.ladders.oc.jobs.ATSJob;
 import com.ladders.oc.jobs.Job;
 import com.ladders.oc.jobseekers.Jobseeker;
+import com.ladders.oc.recruiters.JobPosting;
+import com.ladders.oc.recruiters.JobRepository;
+import com.ladders.oc.recruiters.Recruiter;
 
 public class AdminTest
 {
@@ -25,9 +28,9 @@ public class AdminTest
   private Admin theLadders;
   private Date dayOne = null;
   private Date dayTwo = null;
-  private Job developerJob;
-  private Job architectJob;
-  private Job programmerJob;
+  private JobPosting developerPosting;
+  private JobPosting architectPosting;
+  private JobPosting programmerPosting;
   
   @AfterClass
   public static void tearDownAfterClass() throws Exception
@@ -66,13 +69,13 @@ public class AdminTest
 
     setupApplications();
 
-    numDeveloperApplications = theLadders.getAggregateApplicationsBy(developerJob);
+    numDeveloperApplications = theLadders.getAggregateApplicationsBy(developerPosting);
     assertEquals(numDeveloperApplications, 2);
     
-    numArchitectApplications = theLadders.getAggregateApplicationsBy(architectJob);
+    numArchitectApplications = theLadders.getAggregateApplicationsBy(architectPosting);
     assertEquals(numArchitectApplications, 2);
 
-    numProgrammerApplications = theLadders.getAggregateApplicationsBy(programmerJob);
+    numProgrammerApplications = theLadders.getAggregateApplicationsBy(programmerPosting);
     assertEquals(numProgrammerApplications, 0);    
   }
   
@@ -102,21 +105,28 @@ public class AdminTest
 
   private void setupApplications()
   {
-    developerJob = ATSJob.titled("Developer");
-    architectJob = ATSJob.titled("Architect");
-    programmerJob = ATSJob.titled("Programmer");
+    JobRepository jobRepository = new JobRepository();
+    Recruiter recruiter = Recruiter.named("George");
+
+    Job developerJob = ATSJob.titled("Developer");
+    Job architectJob = ATSJob.titled("Architect");
+    Job programmerJob = ATSJob.titled("Programmer");
+    developerPosting = recruiter.post(developerJob).to(jobRepository);
+    architectPosting = recruiter.post(architectJob).to(jobRepository);
+    programmerPosting = recruiter.post(programmerJob).to(jobRepository);
+
     Jobseeker jobseekerTom   = Jobseeker.named("Tom");   
     Jobseeker jobseekerDick  = Jobseeker.named("Dick");    
     Jobseeker jobseekerHarry = Jobseeker.named("Harry");    
 
     boolean applyStatus;
-    applyStatus = jobseekerTom.applyFor(developerJob).to(appProcessorOne);
+    applyStatus = jobseekerTom.applyFor(developerPosting).to(appProcessorOne);
     assertTrue(applyStatus);
-    applyStatus = jobseekerHarry.applyFor(developerJob).to(appProcessorOne);
+    applyStatus = jobseekerHarry.applyFor(developerPosting).to(appProcessorOne);
     assertTrue(applyStatus);
-    applyStatus = jobseekerTom.applyFor(architectJob).to(appProcessorOne);
+    applyStatus = jobseekerTom.applyFor(architectPosting).to(appProcessorOne);
     assertTrue(applyStatus);
-    applyStatus = jobseekerDick.applyFor(architectJob).to(appProcessorTwo);
+    applyStatus = jobseekerDick.applyFor(architectPosting).to(appProcessorTwo);
     assertTrue(applyStatus);
   }
 }

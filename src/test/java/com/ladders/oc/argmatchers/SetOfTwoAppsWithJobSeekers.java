@@ -31,7 +31,7 @@ public class SetOfTwoAppsWithJobSeekers extends ArgumentMatcher<Set<DisplayableA
     {
       ApplicationDisplayer appDisplayer = Mockito.mock(ApplicationDisplayer.class);
       app.displayTo(appDisplayer);
-      Mockito.verify(appDisplayer).displayApplication(Mockito.argThat(new AnyJob()), 
+      Mockito.verify(appDisplayer).displayApplication(Mockito.argThat(new AnyJobPosting()), 
                                                       Mockito.argThat(new OneJobseeker(jobseeker1, jobseeker2)),
                                                       Mockito.argThat(new AnyDate()));
     }
